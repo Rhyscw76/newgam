@@ -141,7 +141,7 @@
             <button class="btn" onclick="closeGame()">Exit</button>
         </div>
         <div id="game-hover-zone"></div>
-        <iframe id="game-frame"></iframe>
+        <iframe id="game-frame" allow="fullscreen"></iframe>
     </div>
 
     <div id="dashboard">
@@ -174,7 +174,7 @@
         {title:"Minecraft"},
         {name:"Eaglercraft Modded", img:"eagico.png", path:"g/aminecraftfolder/wasm_gc_jspi_offline/eaglercraft_wasm_gc_jspi_offline.html", newTab:true},
         {title:"Basic"},
-        {name:"Stickman Hook",     path:"g/stickmanhook.html"},
+        {name:"Stickman Hook",      path:"g/stickmanhook.html"},
         {name:"Drive Mad",          path:"g/g/drivemad/drivemad.html"},
         {name:"2048",               path:"g/2048.html"},
         {name:"Cookie Clicker",    path:"g/g/cookie/index.html"},
@@ -198,6 +198,7 @@
         {name:"Paper IO 2",         path:"g/paperio2.html"},
         {name:"Slow Roads",        img:"slow.png", path:"slowroads.html"},
         {title:"Unity"},
+        {name:"Shell Shockers",    img:"shell.jpg", path:"shellshockers/index.html"},
         {name:"Slime Rancher",      img:"ranch.png",  path:"slimerancher.html"},
         {name:"Karlson",            img:"karlson.png", path:"karlson.html"},
         {name:"Raft Game",          img:"raft.png",    path:"g/raftgame/index.html"},
@@ -467,7 +468,7 @@
     }
 
     function setCloak(t, f) { document.title = t; document.getElementById('tab-icon').href = f; tgl('cloak-modal'); }
-    function toggleFS() { if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); } else { if (document.exitFullscreen) document.exitFullscreen(); } }
+    function toggleFS() { if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); } else { document.exitFullscreen(); } }
 </script>
 </body>
 </html>

@@ -1,0 +1,146 @@
+/*
+Custom style
+
+You can override the default class or style here
+
+This file will not be overwritten by the updater
+*/
+
+/* Body Styles */
+body {
+    background: url('../images/freegames-io-bg.png');
+    background-size: cover;
+}
+
+/* Logo Styles */
+.site-logo {
+    width: 140px;
+}
+
+/* Main Content Styles */
+
+/* Custom Category List Styles */
+ul.custom-category-list .cat-item,
+.navbar .custom-category-list .cat-item {
+    padding: 0;
+    margin: 0;
+    margin-bottom: 20px;
+    margin-right: 5px;
+    width: auto;
+    border-radius: 0;
+}
+
+.custom-category-list .icon-category {
+    width: 30px;
+    margin-right: 4px;
+    display: block;
+    margin: 0 auto;
+}
+
+.navbar .custom-category-list .cat-name {
+    text-align: center;
+    display: block;
+}
+
+.custom-category-list .cat-game-amount {
+    font-size: 11px;
+}
+
+.navbar .custom-category-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    justify-items: center;
+    gap: 0.5em;
+}
+
+.sidebar.sidebar-secondary {
+	width: 100%;
+}
+
+/* Navbar Search Bar Styles for Mobile */
+@media (max-width: 767.98px) { 
+    .navbar .search-bar {
+        width: 100%;
+    }
+}
+
+/* Sidebar Styles for Different Screen Sizes */
+@media (min-width: 576px) {
+    .sidebar {
+        width: 200px;
+        padding: 0;
+    }
+}
+
+@media (min-width: 768px) {
+    .sidebar ul.custom-category-list {
+        display: block;
+    }
+}
+
+@media (min-width: 1200px) {
+    .sidebar.sidebar-secondary {
+        width: 300px;
+    }
+}
+
+/* Game Item Styles */
+.game-item .list-thumbnail,
+.grid-container > div, 
+.game-container .row > div {
+    position: relative;
+}
+
+/* @media (hover: hover) and (pointer: fine) { */
+    .game-item:hover > .list-info,
+	.list-game:hover > .list-info {
+        opacity: 1 !important;
+        transition: all 0.5s ease !important;
+    }
+/* } */
+
+.game-item:hover .list-thumbnail,
+.list-game:hover .list-thumbnail {
+	opacity: 0.5;
+	transition: all 0.5s ease;
+	opacity: 0.5;
+	transition: all 0.5s ease;
+}
+
+.game-has-video video {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    object-fit: cover;
+    min-width: 100%; 
+    min-height: 100%; 
+    width: auto;
+    height: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.grid-3 .game-has-video video {
+    border-radius: 15px 15px 0 0;
+}
+
+.grid-1 .game-has-video video,
+.grid-2 .game-has-video video {
+    border-radius: 15px;
+}
+
+/* Video Container Styles */
+.video-container {
+    position: absolute;
+    top: 0;
+    overflow: hidden;
+}
+
+
+/* Game list all */
+
+.game-list-all {
+	column-count: 4;
+	column-gap: 20px;
+}

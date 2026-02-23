@@ -106,19 +106,19 @@
             <h2>EXTRAS</h2>
             <p class="modal-subtitle">These tools are web dependent and may not work on restricted networks.</p>
             <div style="display:flex;flex-direction:column;gap:10px;margin:15px 0;">
-                <button class="extras-btn" onclick="const r=this.getBoundingClientRect();tgl('extras-modal');suppressCtxClear=true;setTimeout(()=>showCtx(r.left,r.bottom+4,'Sandstone.html','Sandstone'),0)">
+                <button class="extras-btn" onclick="const r=this.getBoundingClientRect();tgl('extras-modal');suppressCtxClear=true;setTimeout(()=>showCtx(r.left,r.bottom+4,'sandstone.html','Sandstone'),0)">
                     <span class="extras-btn-title">Sandstone</span>
                     <span class="extras-btn-sub">Web Proxy — main browser proxy</span>
                 </button>
-                <button class="extras-btn" onclick="const r=this.getBoundingClientRect();tgl('extras-modal');suppressCtxClear=true;setTimeout(()=>showCtx(r.left,r.bottom+4,'Helios-Offline.html','Helios Browser'),0)">
+                <button class="extras-btn" onclick="const r=this.getBoundingClientRect();tgl('extras-modal');suppressCtxClear=true;setTimeout(()=>showCtx(r.left,r.bottom+4,'heliosoffline.html','Helios Browser'),0)">
                     <span class="extras-btn-title">Helios</span>
                     <span class="extras-btn-sub">Browser Proxy — original full-featured version</span>
                 </button>
-                <button class="extras-btn" onclick="const r=this.getBoundingClientRect();tgl('extras-modal');suppressCtxClear=true;setTimeout(()=>showCtx(r.left,r.bottom+4,'Heli-main/index.html','Heli Browser'),0)">
+                <button class="extras-btn" onclick="const r=this.getBoundingClientRect();tgl('extras-modal');suppressCtxClear=true;setTimeout(()=>showCtx(r.left,r.bottom+4,'helimain/index.html','Heli Browser'),0)">
                     <span class="extras-btn-title">Heli</span>
                     <span class="extras-btn-sub">Browser Proxy — lightweight CSS-compatible alternative</span>
                 </button>
-                <button class="extras-btn" onclick="openGame('NautilusOS-OneFile.html','Nautilus OS');tgl('extras-modal')">
+                <button class="extras-btn" onclick="openGame('nautilusosonefile.html','Nautilus OS');tgl('extras-modal')">
                     <span class="extras-btn-title">Nautilus</span>
                     <span class="extras-btn-sub">Web Operating System — full desktop experience in browser</span>
                 </button>
@@ -151,7 +151,7 @@
         </div>
         <div class="nav">
             <input id="search" oninput="doSearch()" placeholder="">
-            <button class="btn" onclick="openGame('g/g/Ruffle/Ruffle.html','Flash')">Flash</button>
+            <button class="btn" onclick="openGame('g/g/ruffle/ruffle.html','Flash')">Flash</button>
             <button class="btn" onclick="toggleFS()">FS</button>
             <button class="btn" onclick="tgl('extras-modal')">Extras</button>
         </div>
@@ -172,59 +172,59 @@
 
     const fullLib = [
         {title:"Minecraft"},
-        {name:"Eaglercraft Modded", img:"Eagico.png", path:"g/A minecraft folder/wasm_gc_jspi_offline/Eaglercraft_WASM-GC_JSPI_Offline.html", newTab:true},
+        {name:"Eaglercraft Modded", img:"eagico.png", path:"g/aminecraftfolder/wasm_gc_jspi_offline/eaglercraft_wasm_gc_jspi_offline.html", newTab:true},
         {title:"Basic"},
         {name:"Stickman Hook",     path:"g/stickmanhook.html"},
-        {name:"Drive Mad",         path:"g/g/drivemad/drivemad.html"},
-        {name:"2048",              path:"g/2048.html"},
+        {name:"Drive Mad",          path:"g/g/drivemad/drivemad.html"},
+        {name:"2048",               path:"g/2048.html"},
         {name:"Cookie Clicker",    path:"g/g/cookie/index.html"},
         {name:"Cube Field",        path:"g/g/cubefield/index.html"},
         {name:"Spacebar Clicker",  path:"g/spacebarclicker.html"},
         {name:"Offline Paradise",  path:"g/offlineparadise.html"},
-        {name:"Sandboxels",        img:"sand.png", path:"sandboxels-main/index.html"},
+        {name:"Sandboxels",        img:"sand.png", path:"sandboxelsmain/index.html"},
         {name:"Agario Lite",       path:"g/agarolite.html"},
         {name:"Evil Glitch",       path:"g/evilglitch.html"},
         {name:"Its Raining Boxes", path:"g/itsrainingboxes.html"},
-        {name:"T Rex",             path:"g/trex.html"},
-        {name:"Stack",             path:"g/stack.html"},
-        {name:"Rolling Forests",   path:"g/rollingforests.html"},
-        {name:"Radius Raid",       path:"g/radiusraid.html"},
-        {name:"Mountain Maze",     path:"g/mountainmaze.html"},
-        {name:"Fluid Simulator",   path:"g/fluidsimulator.html"},
-        {name:"Edge Not Found",    path:"g/edgenotfound.html"},
+        {name:"T Rex",              path:"g/trex.html"},
+        {name:"Stack",              path:"g/stack.html"},
+        {name:"Rolling Forests",    path:"g/rollingforests.html"},
+        {name:"Radius Raid",        path:"g/radiusraid.html"},
+        {name:"Mountain Maze",      path:"g/mountainmaze.html"},
+        {name:"Fluid Simulator",    path:"g/fluidsimulator.html"},
+        {name:"Edge Not Found",     path:"g/edgenotfound.html"},
         {name:"Ninja vs EVILCORP", path:"g/ninjavsevilcorp.html"},
-        {name:"Geometry Dash",     path:"g/geometrydash.html"},
-        {name:"Wordle",            path:"g/wordle.html"},
-        {name:"Paper IO 2",        path:"g/paperio2.html"},
-        {name:"Slow Roads",        img:"slow.png", path:"Slowroads.html"},
+        {name:"Geometry Dash",      path:"g/geometrydash.html"},
+        {name:"Wordle",             path:"g/wordle.html"},
+        {name:"Paper IO 2",         path:"g/paperio2.html"},
+        {name:"Slow Roads",        img:"slow.png", path:"slowroads.html"},
         {title:"Unity"},
-        {name:"Slime Rancher",          img:"Ranch.png",   path:"Slime Rancher.html"},
-        {name:"Karlson",                img:"Karlson.png", path:"Karlson.html"},
-        {name:"Raft Game",              img:"raft.png",    path:"g/raftgame/index.html"},
-        {name:"Slope",                  path:"g/slope.html"},
-        {name:"Burrito Bison",          path:"g/g/burritobison/burritobison.html"},
-        {name:"Tube Jumpers",           path:"g/tubejumpers.html"},
-        {name:"Hole IO",                path:"g/holeio.html"},
-        {name:"Madalin Stunt Cars",     path:"g/g/madalinstuntcars/madalinstuntcars.html"},
-        {name:"Glass City",             path:"g/g/glasscity/glasscity.html"},
-        {name:"Tunnel Rush",            path:"g/g/tunnelrush/tunnelrush.html"},
-        {name:"Tanuki Sunset",          path:"g/g/tanukisunset/tanukisunset.html"},
+        {name:"Slime Rancher",      img:"ranch.png",  path:"slimerancher.html"},
+        {name:"Karlson",            img:"karlson.png", path:"karlson.html"},
+        {name:"Raft Game",          img:"raft.png",    path:"g/raftgame/index.html"},
+        {name:"Slope",              path:"g/slope.html"},
+        {name:"Burrito Bison",      path:"g/g/burritobison/burritobison.html"},
+        {name:"Tube Jumpers",       path:"g/tubejumpers.html"},
+        {name:"Hole IO",            path:"g/holeio.html"},
+        {name:"Madalin Stunt Cars", path:"g/g/madalinstuntcars/madalinstuntcars.html"},
+        {name:"Glass City",         path:"g/g/glasscity/glasscity.html"},
+        {name:"Tunnel Rush",        path:"g/g/tunnelrush/tunnelrush.html"},
+        {name:"Tanuki Sunset",      path:"g/g/tanukisunset/tanukisunset.html"},
         {name:"A Dance of Fire and Ice",path:"g/g/fireice/index.html"},
         {name:"Game Inside a Game",     path:"g/g/gameinsideagame/index.html"},
-        {name:"Cell Machine",           path:"g/g/cellmachine/index.html"},
+        {name:"Cell Machine",            path:"g/g/cellmachine/index.html"},
         {name:"Slope 2",                path:"g/g/slope2/index.html"},
-        {name:"Ai Creatures",           path:"g/g/aicreatures/index.html"},
-        {name:"Grey Box Testing",       path:"g/g/greybox/index.html"},
+        {name:"Ai Creatures",            path:"g/g/aicreatures/index.html"},
+        {name:"Grey Box Testing",        path:"g/g/greybox/index.html"},
         {title:"Retrogaming"},
-        {name:"Half Life",      img:"Half.png", path:"Half Life.html"},
+        {name:"Half Life",      img:"half.png", path:"halflife.html"},
         {name:"Super Mario 64", path:"g/supermario64.html"},
         {name:"Celeste",        path:"g/celeste.html"},
         {name:"Just One Boss",  path:"g/justoneboss.html"},
         {name:"Super Mario RPG",path:"g/supermariorpg.html"},
         {title:"Henry Stickmin"},
-        {name:"Breaking The Bank",        path:"g/breakingthebank.html"},
+        {name:"Breaking The Bank",         path:"g/breakingthebank.html"},
         {name:"Escaping The Prison",      path:"g/escapingtheprison.html"},
-        {name:"Stealing The Diamond",     path:"g/stealingthediamond.html"},
+        {name:"Stealing The Diamond",      path:"g/stealingthediamond.html"},
         {name:"Infiltrating The Airship", path:"g/infiltratingtheairship.html"},
         {name:"Fleeing The Complex",      path:"g/fleeingthecomplex.html"},
         {title:"Flash"},
@@ -374,13 +374,10 @@
             window.scrollTo(0, cur + d * 0.12); upScroll(); requestAnimationFrame(animScroll);
         }
 
-        // Thumb drag
         let isDrag = false, dragStartY, dragStartScroll;
         th.onmousedown = e => { isDrag = true; dragStartY = e.clientY; dragStartScroll = window.scrollY; sAnim = false; e.preventDefault(); e.stopPropagation(); };
 
-        // Page drag (left click on background)
         let pageDrag = false, pageStartY, pageStartScroll;
-
         window.addEventListener('mousedown', e => {
             if (e.button === 0 && !e.target.closest('.tile,.btn,input,#scroll-thumb,#scroll-track,.scroll-arrow,.modal-content,#ctx-menu')) {
                 pageDrag = true; pageStartY = e.clientY; pageStartScroll = sTar; sAnim = false;
@@ -400,21 +397,14 @@
         };
 
         window.onmouseup = () => { isDrag = false; pageDrag = false; };
-
-        // Track click to jump
         tr.onclick = e => {
             if (e.target === th) return;
             smooth((e.clientY - tr.getBoundingClientRect().top) / tr.offsetHeight * (document.body.scrollHeight - window.innerHeight));
         };
-
-        // Wheel
         window.addEventListener('wheel', e => { if (midActive) return; e.preventDefault(); smooth(sTar + e.deltaY * 0.8); }, {passive:false});
-
-        // Arrow buttons
         document.getElementById('scroll-up').onclick   = () => smooth(sTar - 400);
         document.getElementById('scroll-down').onclick = () => smooth(sTar + 400);
 
-        // Custom middle-click autoscroll
         let midActive = false, midOriginY = 0, midRAF = null;
         window.currentMouseY = 0;
         const midCursor = document.createElement('div');
@@ -477,11 +467,7 @@
     }
 
     function setCloak(t, f) { document.title = t; document.getElementById('tab-icon').href = f; tgl('cloak-modal'); }
-    function toggleFS() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
-
-    let suppressCtxClear = false;
-    window.onclick = () => { if (suppressCtxClear) { suppressCtxClear = false; return; } const m = document.getElementById('ctx-menu'); if (m) m.style.display = 'none'; };
-    window.addEventListener('scroll', () => { const m = document.getElementById('ctx-menu'); if (m) m.style.display = 'none'; });
+    function toggleFS() { if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); } else { if (document.exitFullscreen) document.exitFullscreen(); } }
 </script>
 </body>
 </html>

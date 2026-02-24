@@ -2,17 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gams Mobile</title>
     <link rel="icon" id="tab-icon" href="img/gams-g.png">
     <style>
         @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes menuDrop { from { transform: translateY(-100%); } to { transform: translateY(0); } }
 
-        :root { --p: #f00; --g: rgba(15,15,15,.8); --b: rgba(255,255,255,0.2); --glow: 0 0 25px rgba(255,0,0,.4); }
-        * { margin:0; padding:0; box-sizing:border-box; outline:0; -webkit-user-select:none; user-select:none; scrollbar-width:none; }
+        :root { --p: #f00; --g: rgba(15,15,15,.8); --b: rgba(255,255,255,0.2); }
+        
+        /* FIX: Prevent page dragging/bouncing */
+        * { 
+            margin:0; padding:0; box-sizing:border-box; outline:0; 
+            -webkit-user-select:none; user-select:none; 
+            scrollbar-width:none;
+            touch-action: pan-x pan-y; /* Restricted to prevent accidental browser scaling */
+        }
         ::-webkit-scrollbar { display:none; }
-        html, body { color:#fff; font-family:'Segoe UI',sans-serif; background:#000; height:100%; width:100%; overflow:hidden; }
+        
+        html, body { 
+            color:#fff; font-family:'Segoe UI',sans-serif; background:#000; 
+            height:100%; width:100%; overflow:hidden; 
+            overscroll-behavior-y: none; /* FIX: Prevents the "pull down to refresh" or bounce gap */
+        }
         
         .mobile-container {
             position: fixed;
@@ -24,8 +37,37 @@
             flex-direction: column;
             background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('ibg.svg') center/cover no-repeat;
             overflow: hidden;
+            z-index: 10;
+        }
+
+        /* PULL MENU STYLES */
+        .pull-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid var(--p);
             z-index: 100000;
-            animation: fadeIn 0.3s ease-in;
+            transform: translateY(-100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .pull-menu.active { transform: translateY(0); }
+        .pull-handle {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
         }
 
         .mobile-header {
@@ -36,30 +78,10 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
             flex-shrink: 0;
         }
 
-        .mobile-header h1 {
-            font-size: 1.3rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(255,0,0,0.5);
-        }
-
-        .mobile-header-buttons { display: flex; gap: 6px; }
-
-        .mobile-btn-small {
-            padding: 8px 12px;
-            background: rgba(255,0,0,0.2);
-            border: 1.5px solid var(--p);
-            border-radius: 8px;
-            color: #fff;
-            font-weight: 700;
-            font-size: 0.6rem;
-            text-transform: uppercase;
-        }
+        .mobile-header h1 { font-size: 1.3rem; font-weight: 900; letter-spacing: 2px; color: #fff; }
 
         .mobile-tabs {
             display: flex;
@@ -77,16 +99,11 @@
             border-bottom: 3px solid transparent;
             color: rgba(255,255,255,0.6);
             font-weight: 700;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            transition: 0.3s;
         }
 
-        .mobile-tab.active {
-            color: #fff;
-            border-bottom-color: var(--p);
-            background: rgba(255,0,0,0.1);
-        }
+        .mobile-tab.active { color: #fff; border-bottom-color: var(--p); }
 
         .mobile-content {
             flex: 1;
@@ -94,13 +111,8 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        .mobile-section {
-            display: none; 
-            flex-direction: column;
-            min-height: 100%;
-            animation: slideIn 0.3s ease-out;
-        }
-        .mobile-section.active { display: flex !important; }
+        .mobile-section { display: none; min-height: 100%; animation: slideIn 0.3s ease-out; }
+        .mobile-section.active { display: flex !important; flex-direction: column; }
 
         .mobile-game-grid {
             display: grid;
@@ -112,37 +124,26 @@
         .mobile-tile {
             background: rgba(20, 20, 20, 0.3); 
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 16px;
             padding: 10px;
             text-align: center;
         }
 
-        .mobile-tile img {
-            width: 100%;
-            aspect-ratio: 1;
-            border-radius: 12px;
-            object-fit: cover;
-            margin-bottom: 8px;
-        }
-
-        .mobile-tile-name { font-size: 0.75rem; font-weight: 700; color: #fff; }
+        .mobile-tile img { width: 100%; aspect-ratio: 1; border-radius: 12px; object-fit: cover; margin-bottom: 8px; }
 
         .mobile-search { padding: 12px; }
-
-        /* FIX: Font-size 16px prevents the browser from zooming in on click */
         .mobile-search input {
             width: 100%;
-            padding: 10px 14px;
+            padding: 12px;
             background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(15px);
             border: 1px solid var(--b);
             border-radius: 12px;
             color: #fff;
-            font-size: 16px; 
+            font-size: 16px; /* Prevents auto-zoom */
         }
 
+        /* MODALS */
         .mobile-modal {
             display: none;
             position: fixed;
@@ -163,7 +164,6 @@
             width: 100%;
             max-width: 320px;
             text-align: center;
-            box-shadow: 0 0 30px rgba(255,0,0,0.2);
         }
         .modal-btn {
             width: 100%;
@@ -173,23 +173,26 @@
             border: none;
             font-weight: 900;
             text-transform: uppercase;
-            cursor: pointer;
         }
         .btn-red { background: var(--p); color: #fff; }
         .btn-dark { background: #222; color: #fff; }
-
-        .mobile-eaglercraft-section { justify-content: center; align-items: center; padding: 20px; }
     </style>
 </head>
-<body>
+<body onload="initMobileVersion()">
 
-    <div class="mobile-container">
-        <div class="mobile-header">
+    <div id="pull-menu" class="pull-menu">
+        <h2 style="color:var(--p); font-size: 1.1rem; text-align: center;">QUICK MENU</h2>
+        <button class="modal-btn btn-dark" onclick="window.location.reload()">🔄 Refresh App</button>
+        <button class="modal-btn btn-dark" onclick="mobileTglModal('pc-modal'); togglePullMenu(false)">💻 Switch to PC</button>
+        <button class="modal-btn btn-dark" onclick="mobileTglModal('settings-modal'); togglePullMenu(false)">⚙️ Settings</button>
+        <button class="modal-btn btn-red" onclick="togglePullMenu(false)">CLOSE</button>
+        <div class="pull-handle"></div>
+    </div>
+
+    <div class="mobile-container" id="main-container">
+        <div class="mobile-header" id="header-trigger">
             <h1>GAMS</h1>
-            <div class="mobile-header-buttons">
-                <button class="mobile-btn-small" onclick="mobileTglModal('pc-modal')">💻 PC</button>
-                <button class="mobile-btn-small" onclick="mobileTglModal('settings-modal')">⚙️</button>
-            </div>
+            <p style="font-size: 0.6rem; opacity: 0.5;">Pull down for menu</p>
         </div>
 
         <div class="mobile-tabs">
@@ -201,16 +204,18 @@
             <input type="text" id="mobile-search" placeholder="Search..." oninput="mobileDoSearch()">
         </div>
 
-        <div class="mobile-content">
+        <div class="mobile-content" id="scroll-area">
             <div id="mobile-games-section" class="mobile-section active">
                 <div id="mobile-game-grid" class="mobile-game-grid"></div>
             </div>
 
-            <div id="mobile-eaglercraft-section" class="mobile-section mobile-eaglercraft-section">
-                <div class="mobile-tile" style="padding: 40px; width: 85%;">
-                    <h2 style="margin-bottom: 10px;">MINECRAFT</h2>
-                    <p style="font-size: 0.8rem; margin-bottom: 20px; opacity: 0.7;">1.8.8 Offline Mode</p>
-                    <button class="modal-btn btn-red" onclick="window.location.href='g/aminecraftfolder/wasm_gc_jspi_offline/eaglercraft_wasm_gc_jspi_offline.html'">Launch Game</button>
+            <div id="mobile-eaglercraft-section" class="mobile-section">
+                <div style="padding: 20px; display: flex; justify-content: center; align-items: center; height: 100%;">
+                    <div class="mobile-tile" style="padding: 40px; width: 100%;">
+                        <h2>MINECRAFT</h2>
+                        <p style="margin: 10px 0 20px; opacity: 0.6;">Eaglercraft 1.8.8 Offline</p>
+                        <button class="modal-btn btn-red" onclick="window.location.href='g/aminecraftfolder/wasm_gc_jspi_offline/eaglercraft_wasm_gc_jspi_offline.html'">Launch</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -218,10 +223,8 @@
 
     <div id="pc-modal" class="mobile-modal">
         <div class="mobile-modal-content">
-            <h2 style="color:var(--p); font-size: 1.4rem;">Switch to PC?</h2>
-            <p style="margin: 15px 0; font-size: 0.85rem; line-height: 1.4; opacity: 0.9;">
-                Warning: The desktop version <b>requires a keyboard and mouse/trackpad</b> for the majority of games.
-            </p>
+            <h2 style="color:var(--p)">Switch to PC?</h2>
+            <p style="margin: 15px 0; font-size: 0.85rem; opacity: 0.9;">Requires keyboard & mouse/trackpad for majority of games.</p>
             <button class="modal-btn btn-red" onclick="window.location.href='index-desktop.html'">Open PC Version</button>
             <button class="modal-btn btn-dark" onclick="mobileTglModal('pc-modal')">Stay on Mobile</button>
         </div>
@@ -230,12 +233,37 @@
     <div id="settings-modal" class="mobile-modal">
         <div class="mobile-modal-content">
             <h2>Settings</h2>
-            <button class="modal-btn btn-dark" onclick="location.reload()">🔄 Force Refresh</button>
+            <button class="modal-btn btn-dark" onclick="window.location.href='index.html'">Go to Home</button>
             <button class="modal-btn btn-red" onclick="mobileTglModal('settings-modal')">Close</button>
         </div>
     </div>
 
     <script>
+        // PULL TO OPEN LOGIC
+        let touchStart = 0;
+        const pullMenu = document.getElementById('pull-menu');
+
+        document.addEventListener('touchstart', e => {
+            touchStart = e.touches[0].clientY;
+        }, {passive: true});
+
+        document.addEventListener('touchmove', e => {
+            let touchMove = e.touches[0].clientY;
+            // If pulling down from the top area
+            if (touchMove - touchStart > 120 && touchStart < 150) {
+                togglePullMenu(true);
+            }
+            // If pulling up from the bottom (while menu is open)
+            if (touchStart - touchMove > 100 && pullMenu.classList.contains('active')) {
+                togglePullMenu(false);
+            }
+        }, {passive: true});
+
+        function togglePullMenu(show) {
+            pullMenu.classList.toggle('active', show);
+        }
+
+        // GAME INITIALIZATION
         function initMobileVersion() {
             const games = [
                 { name: 'Stickman Hook', url: 'g/stickmanhook.html', img: 'stickmanhook.png' },
@@ -257,15 +285,12 @@
             games.forEach((game) => {
                 const tile = document.createElement('div');
                 tile.className = 'mobile-tile';
-                
                 const img = document.createElement('img');
                 img.src = `img/${game.img}`;
                 img.onerror = () => { img.src = 'img/gams-g.png'; };
-                
                 const name = document.createElement('div');
                 name.className = 'mobile-tile-name';
                 name.textContent = game.name;
-                
                 tile.appendChild(img);
                 tile.appendChild(name);
                 tile.onclick = () => { window.location.href = game.url; };
@@ -292,8 +317,6 @@
         function mobileTglModal(id) {
             document.getElementById(id).classList.toggle('active');
         }
-
-        window.onload = initMobileVersion;
     </script>
 </body>
 </html>

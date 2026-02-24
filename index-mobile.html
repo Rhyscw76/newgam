@@ -2,12 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gams Mobile</title>
     <style>
-        /* ============================================
-           ROOT BACKGROUND - SVG WALLPAPER VISIBILITY
-           ============================================ */
         html {
             background: #000 url('ibg.svg') no-repeat center center fixed;
             background-size: cover;
@@ -39,9 +37,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ============================================
-           PULL-DOWN MENU (HIDDEN ABOVE SCREEN)
-           ============================================ */
         #pull-menu {
             position: fixed;
             top: 0;
@@ -71,9 +66,6 @@
             letter-spacing: 2px;
         }
 
-        /* ============================================
-           MAIN UI LAYER (TRANSPARENT BACKGROUND)
-           ============================================ */
         .ui-layer {
             position: fixed;
             top: 0;
@@ -95,19 +87,27 @@
             display: none;
         }
 
-        /* ============================================
-           HEADER
-           ============================================ */
         .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
             padding: 14px 20px;
             border-bottom: 4px solid #f00;
             background: rgba(0, 0, 0, 0.8);
             text-align: center;
             flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
+            z-index: 10000;
+        }
+
+        .header:active {
+            background: rgba(0, 0, 0, 0.9);
+            transform: scale(0.98);
         }
 
         .header h1 {
@@ -117,36 +117,12 @@
             letter-spacing: 4px;
             color: #fff;
             text-shadow: 0 2px 10px rgba(255, 0, 0, 0.3);
-            flex: 1;
-            text-align: center;
         }
 
         .desktop-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            position: absolute;
-            right: 20px;
-            z-index: 1001;
+            display: none;
         }
 
-        .desktop-btn:active {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 0, 0, 0.3);
-            transform: scale(0.95);
-        }
-
-        /* ============================================
-           GAME GRID - SPACIOUS SCROLLABLE LAYOUT
-           ============================================ */
         .grid {
             flex: 1;
             overflow-y: auto;
@@ -156,6 +132,7 @@
             gap: 20px;
             padding: 20px;
             margin: 0;
+            margin-top: 80px; /* below fixed header */
         }
 
         .grid::-webkit-scrollbar {
@@ -171,34 +148,22 @@
             border-radius: 3px;
         }
 
-        /* ============================================
-           GAME TILES - CARD STYLE WITH NAME BACKING
-           ============================================ */
         .tile {
             background: transparent;
             border: none;
-            border-radius: 0;
             padding: 0;
             text-align: center;
-            backdrop-filter: none;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
             overflow: visible;
-            box-shadow: none;
-            aspect-ratio: auto;
-            min-height: auto;
         }
 
         .tile:active {
-            background: transparent;
-            border-color: transparent;
             transform: scale(0.95);
-            box-shadow: none;
         }
 
-        /* Image container */
         .tile-image-wrapper {
             width: 100%;
             aspect-ratio: 1 / 1;
@@ -219,11 +184,6 @@
             object-position: center;
         }
 
-        .tile img.missing {
-            opacity: 0.5;
-        }
-
-        /* Label section - backing card */
         .tile-label {
             padding: 8px 10px;
             background: rgba(30, 30, 30, 0.95);
@@ -236,12 +196,8 @@
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
-            line-height: 1.3;
         }
 
-        /* ============================================
-           BUTTONS
-           ============================================ */
         .btn {
             width: 100%;
             padding: 16px;
@@ -254,7 +210,6 @@
             letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.2s ease;
-            -webkit-user-select: none;
         }
 
         .btn:active {
@@ -273,9 +228,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* ============================================
-           GAME FRAME
-           ============================================ */
         #game-frame {
             position: fixed;
             inset: 0;
@@ -291,9 +243,7 @@
             display: block;
         }
 
-        /* ============================================
-           PULL-DOWN ZONE (INVISIBLE TAP AREA)
-           ============================================ */
+        /* click-through pull zone so header is clickable */
         #pull-zone {
             position: fixed;
             top: 0;
@@ -302,15 +252,13 @@
             height: 60px;
             z-index: 9999;
             cursor: pointer;
+            pointer-events: none;
         }
 
-        /* ============================================
-           MODAL & WARNING
-           ============================================ */
         .modal {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             display: none;
             align-items: center;
             justify-content: center;
@@ -388,142 +336,135 @@
 </head>
 <body>
 
-    <!-- INVISIBLE PULL-DOWN TRIGGER ZONE -->
-    <div id="pull-zone"></div>
+<div id="pull-zone"></div>
 
-    <!-- MODAL WARNING -->
-    <div id="desktop-modal" class="modal">
-        <div class="modal-content">
-            <h2>⚠ DESKTOP MODE</h2>
-            <p>Most games require a keyboard and mouse.<br>The UI will be less readable on mobile.</p>
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-cancel" onclick="closeDesktopModal()">CANCEL</button>
-                <button class="modal-btn modal-btn-proceed" onclick="proceedToDesktop()">PROCEED</button>
-            </div>
+<div id="pull-menu">
+    <h2>PAUSED</h2>
+    <button class="btn btn-red" onclick="exitGame()">EXIT TO MENU</button>
+    <button class="btn btn-dark" onclick="toggleMenu()">RESUME GAME</button>
+</div>
+
+<!-- existing generic desktop modal (if you still want it) -->
+<div id="desktop-modal" class="modal">
+    <div class="modal-content">
+        <h2>⚠ DESKTOP MODE</h2>
+        <p>Most games require a keyboard and mouse.<br>The UI will be less readable on mobile.</p>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeModal()">CANCEL</button>
+            <button class="modal-btn modal-btn-proceed" onclick="goToDesktop()">PROCEED</button>
         </div>
     </div>
+</div>
 
-    <!-- PULL-DOWN MENU (HIDDEN ABOVE) -->
-    <div id="pull-menu">
-        <h2>PAUSED</h2>
-        <button class="btn btn-red" onclick="exitGame()">EXIT TO MENU</button>
-        <button class="btn btn-dark" onclick="toggleMenu()">RESUME GAME</button>
-    </div>
-
-    <!-- GAME IFRAME (HIDDEN BY DEFAULT) -->
-    <iframe id="game-frame"></iframe>
-
-    <!-- MAIN UI LAYER -->
-    <div class="ui-layer" id="main-ui">
-        <div class="header">
-            <h1>GAMS</h1>
-            <button class="desktop-btn" onclick="showDesktopModal()">DESKTOP</button>
+<!-- NEW: header-specific desktop warning modal -->
+<div id="desktop-header-modal" class="modal">
+    <div class="modal-content">
+        <h2>⚠ DESKTOP VERSION</h2>
+        <p>Be aware the desktop version requires a keyboard and mouse or trackpad for the majority of games, and the UI may not be readable on phones.</p>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeDesktopHeaderModal()">CANCEL</button>
+            <button class="modal-btn modal-btn-proceed" onclick="proceedToDesktop()">PROCEED</button>
         </div>
-        <div class="grid" id="grid"></div>
     </div>
+</div>
 
-    <script>
-        // ============================================
-        // MENU TOGGLE
-        // ============================================
-        function toggleMenu() {
-            const menu = document.getElementById('pull-menu');
-            menu.classList.toggle('open');
-        }
+<iframe id="game-frame"></iframe>
 
-        // ============================================
-        // DESKTOP MODE MODAL
-        // ============================================
-        function showDesktopModal() {
-            document.getElementById('desktop-modal').classList.add('active');
-        }
+<div class="ui-layer" id="main-ui">
+    <!-- header now opens the desktop-warning modal instead of direct link -->
+    <div class="header" onclick="openDesktopHeaderModal()">
+        <h1>GAMS</h1>
+    </div>
+    <div class="grid" id="grid"></div>
+</div>
 
-        function closeDesktopModal() {
-            document.getElementById('desktop-modal').classList.remove('active');
-        }
+<script>
+    function toggleMenu() {
+        document.getElementById('pull-menu').classList.toggle('open');
+    }
 
-        function proceedToDesktop() {
-            window.location.href = 'index-desktop.html';
-        }
+    function openModal() {
+        document.getElementById('desktop-modal').classList.add('active');
+    }
 
-        // ============================================
-        // GAME LAUNCHER
-        // ============================================
-        function launchGame(url) {
-            const frame = document.getElementById('game-frame');
-            const mainUI = document.getElementById('main-ui');
-            const menu = document.getElementById('pull-menu');
+    function closeModal() {
+        document.getElementById('desktop-modal').classList.remove('active');
+    }
 
-            frame.src = url;
-            frame.classList.add('active');
-            mainUI.classList.add('hidden');
-            menu.classList.remove('open');
-        }
+    function goToDesktop() {
+        window.location.href = 'index-desktop.html';
+    }
 
-        // ============================================
-        // EXIT GAME
-        // ============================================
-        function exitGame() {
-            const frame = document.getElementById('game-frame');
-            const mainUI = document.getElementById('main-ui');
-            const menu = document.getElementById('pull-menu');
+    // header desktop modal controls
+    function openDesktopHeaderModal() {
+        document.getElementById('desktop-header-modal').classList.add('active');
+    }
 
-            frame.classList.remove('active');
-            frame.src = '';
-            mainUI.classList.remove('hidden');
-            menu.classList.remove('open');
-        }
+    function closeDesktopHeaderModal() {
+        document.getElementById('desktop-header-modal').classList.remove('active');
+    }
 
-        // ============================================
-        // VERIFIED WORKING GAMES
-        // ============================================
-        const games = [
-            { n: 'Stickman Hook', u: 'g/stickmanhook.html', i: 'stickmanhook.png' },
-            { n: 'Drive Mad', u: 'g/g/drivemad/drivemad.html', i: 'drivemad.png' },
-            { n: '2048', u: 'g/2048.html', i: '2048.png' },
-            { n: 'Cookie Clicker', u: 'g/g/cookie/index.html', i: 'cookieclicker.png' },
-            { n: 'Its Raining Boxes', u: 'g/itsrainingboxes.html', i: 'itsrainingboxes.png' },
-            { n: 'Stack', u: 'g/stack.html', i: 'stack.png' },
-            { n: 'Rolling Forest', u: 'g/rollingforests.html', i: 'rollingforests.png' },
-            { n: 'Fluid Simulator', u: 'g/fluidsimulator.html', i: 'fluidsimulator.png' },
-            { n: 'Geometry Dash', u: 'g/geometrydash.html', i: 'geometrydash.png' },
-            { n: 'Worldle+', u: 'g/wordle.html', i: 'wordle.png' },
-            { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' },
-            { n: 'Raft Wars 1', u: 'g/raftwars.html', i: 'raftwars.png' },
-            { n: 'Raft Wars 2', u: 'g/raftwars2.html', i: 'raftwars2.html' }
-        ];
+    function proceedToDesktop() {
+        window.location.href = 'index-desktop.html';
+    }
 
-        // ============================================
-        // RENDER GAME GRID
-        // ============================================
-        const grid = document.getElementById('grid');
-        games.forEach((game) => {
-            const tile = document.createElement('div');
-            tile.className = 'tile';
-            
-            const imageWrapper = document.createElement('div');
-            imageWrapper.className = 'tile-image-wrapper';
-            
-            const img = document.createElement('img');
-            img.src = `img/${game.i}`;
-            img.alt = game.n;
-            img.onerror = function() {
-                this.src = 'img/gams-g.png';
-                this.classList.add('missing');
-            };
-            
-            const label = document.createElement('div');
-            label.className = 'tile-label';
-            label.textContent = game.n;
-            
-            imageWrapper.appendChild(img);
-            tile.appendChild(imageWrapper);
-            tile.appendChild(label);
-            
-            tile.onclick = () => launchGame(game.u);
-            grid.appendChild(tile);
-        });
-    </script>
+    function launchGame(url) {
+        document.getElementById('game-frame').src = url;
+        document.getElementById('game-frame').classList.add('active');
+        document.getElementById('main-ui').classList.add('hidden');
+        document.getElementById('pull-menu').classList.remove('open');
+    }
+
+    function exitGame() {
+        document.getElementById('game-frame').classList.remove('active');
+        document.getElementById('game-frame').src = '';
+        document.getElementById('main-ui').classList.remove('hidden');
+        document.getElementById('pull-menu').classList.remove('open');
+    }
+
+    const games = [
+        {n: 'Stickman Hook', u: 'g/stickmanhook.html', i: 'stickmanhook.png'},
+        {n: 'Drive Mad', u: 'g/g/drivemad/drivemad.html', i: 'drivemad.png'},
+        {n: '2048', u: 'g/2048.html', i: '2048.png'},
+        {n: 'Cookie Clicker', u: 'g/g/cookie/index.html', i: 'cookieclicker.png'},
+        {n: 'Its Raining Boxes', u: 'g/itsrainingboxes.html', i: 'itsrainingboxes.png'},
+        {n: 'Stack', u: 'g/stack.html', i: 'stack.png'},
+        {n: 'Rolling Forest', u: 'g/rollingforests.html', i: 'rollingforests.png'},
+        {n: 'Fluid Simulator', u: 'g/fluidsimulator.html', i: 'fluidsimulator.png'},
+        {n: 'Geometry Dash', u: 'g/geometrydash.html', i: 'geometrydash.png'},
+        {n: 'Worldle+', u: 'g/wordle.html', i: 'wordle.png'},
+        {n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png'},
+        {n: 'Raft Wars 1', u: 'g/raftwars.html', i: 'raftwars.png'},
+        {n: 'Raft Wars 2', u: 'g/raftwars2.html', i: 'raftwars2.html'}
+    ];
+
+    const grid = document.getElementById('grid');
+    games.forEach((game) => {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+
+        const imageWrapper = document.createElement('div');
+        imageWrapper.className = 'tile-image-wrapper';
+
+        const img = document.createElement('img');
+        img.src = `img/${game.i}`;
+        img.alt = game.n;
+        img.onerror = function () {
+            this.src = 'img/gams-g.png';
+        };
+
+        const label = document.createElement('div');
+        label.className = 'tile-label';
+        label.textContent = game.n;
+
+        imageWrapper.appendChild(img);
+        tile.appendChild(imageWrapper);
+        tile.appendChild(label);
+
+        tile.onclick = () => launchGame(game.u);
+        grid.appendChild(tile);
+    });
+</script>
 
 </body>
 </html>

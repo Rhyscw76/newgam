@@ -6,22 +6,21 @@
     <title>Gams Mobile</title>
     <link rel="icon" id="tab-icon" href="img/gams-g.png">
     <style>
-        :root { --p: #f00; --bg: rgba(10,10,10,0.98); }
+        :root { --p: #f00; --bg: rgba(15,15,15,0.98); }
         
-        /* General Reset */
         * { margin:0; padding:0; box-sizing:border-box; -webkit-user-select:none; user-select:none; }
         
         html, body { 
             background: #000; 
             height: 100%; 
             width: 100%; 
-            overflow: hidden; /* Prevents the whole page from dragging/bouncing */
+            overflow: hidden; 
             overscroll-behavior: none; 
             font-family: 'Segoe UI', sans-serif;
             color: #fff;
         }
 
-        /* INVISIBLE GESTURE TRIGGER (Highest Layer) */
+        /* INVISIBLE GESTURE TRIGGER */
         #pull-trigger {
             position: fixed;
             top: 0;
@@ -30,7 +29,7 @@
             height: 60px;
             z-index: 1000000;
             background: transparent;
-            touch-action: none; /* Stops system interference */
+            touch-action: none;
         }
 
         /* THE PHYSICAL PULL MENU (HUD) */
@@ -40,26 +39,42 @@
             left: 0;
             width: 100%;
             background: var(--bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border-bottom: 3px solid var(--p);
             z-index: 999999;
             transform: translateY(-100%);
             will-change: transform;
-            padding: 50px 20px 30px;
+            /* SAFE AREA FIX: padding-top accounts for notch/status bar */
+            padding: calc(env(safe-area-inset-top) + 20px) 20px 35px;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            box-shadow: 0 10px 50px rgba(0,0,0,0.9);
             text-align: center;
         }
+
+        /* RELOAD ICON TOP RIGHT */
+        .menu-reload-btn {
+            position: absolute;
+            top: calc(env(safe-area-inset-top) + 10px);
+            right: 20px;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: #fff;
+            opacity: 0.6;
+            cursor: pointer;
+            padding: 10px;
+        }
+        .menu-reload-btn:active { opacity: 1; transform: rotate(90deg); transition: 0.2s; }
 
         .pull-handle {
             position: absolute;
             bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
-            width: 45px;
+            width: 50px;
             height: 5px;
             background: rgba(255,255,255,0.2);
             border-radius: 10px;
@@ -71,12 +86,11 @@
             inset: 0;
             display: flex;
             flex-direction: column;
-            /* Updated for better visibility of the pattern as requested previously */
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('ibg.svg') center/cover no-repeat;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('ibg.svg') center/cover no-repeat;
             z-index: 10;
+            padding-top: env(safe-area-inset-top); /* Main UI also respects safe area */
         }
 
-        /* GAME IFRAME */
         #game-frame {
             position: fixed;
             inset: 0;
@@ -88,55 +102,22 @@
             z-index: 50;
         }
 
-        /* HEADER & TABS */
-        .mobile-header { 
-            padding: 18px; 
-            background: rgba(0,0,0,0.8); 
-            border-bottom: 3px solid var(--p);
-            flex-shrink: 0;
-        }
-        .mobile-header h1 { font-size: 1.4rem; letter-spacing: 2px; text-align: center; }
+        .mobile-header { padding: 15px; border-bottom: 3px solid var(--p); flex-shrink: 0; }
+        .mobile-header h1 { font-size: 1.4rem; letter-spacing: 2px; text-align: center; font-weight: 900; }
 
         .mobile-tabs { display: flex; background: rgba(0,0,0,0.6); flex-shrink: 0; }
-        .mobile-tab { 
-            flex: 1; padding: 15px; text-align: center; 
-            font-weight: 800; font-size: 0.75rem; color: #666; 
-            text-transform: uppercase; border-bottom: 3px solid transparent; 
-        }
+        .mobile-tab { flex: 1; padding: 15px; text-align: center; font-weight: 800; font-size: 0.75rem; color: #666; text-transform: uppercase; border-bottom: 3px solid transparent; }
         .mobile-tab.active { color: #fff; border-bottom-color: var(--p); }
 
         .mobile-search { padding: 12px; flex-shrink: 0; }
-        .mobile-search input { 
-            width: 100%; padding: 14px; 
-            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 12px; color: #fff; font-size: 16px; /* 16px prevents zoom */
-        }
+        .mobile-search input { width: 100%; padding: 14px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-size: 16px; }
 
-        /* SCROLLABLE CONTENT FIX */
-        .mobile-content {
-            flex: 1;
-            overflow-y: auto; /* ENABLE SCROLLING */
-            -webkit-overflow-scrolling: touch; /* SMOOTH IOS SCROLL */
-            padding-bottom: 40px;
-        }
+        .mobile-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
-        .mobile-game-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-            padding: 12px; 
-        }
-
-        .mobile-tile { 
-            background: rgba(30, 30, 30, 0.4); 
-            backdrop-filter: blur(10px); 
-            border-radius: 18px; padding: 10px; 
-            text-align: center; border: 1.5px solid rgba(255,255,255,0.1); 
-        }
+        .mobile-game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
+        .mobile-tile { background: rgba(30, 30, 30, 0.4); backdrop-filter: blur(10px); border-radius: 18px; padding: 10px; text-align: center; border: 1.5px solid rgba(255,255,255,0.1); }
         .mobile-tile img { width: 100%; border-radius: 14px; margin-bottom: 8px; }
-        .mobile-tile-name { font-size: 0.8rem; font-weight: 700; }
 
-        /* BUTTONS */
         .btn { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 900; text-transform: uppercase; font-size: 0.9rem; }
         .btn-red { background: var(--p); color: #fff; }
         .btn-dark { background: #1a1a1a; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
@@ -150,10 +131,12 @@
     <div id="pull-trigger"></div>
 
     <div id="pull-menu">
+        <button class="menu-reload-btn" onclick="location.reload()">↻</button>
+        
         <h2 style="color:var(--p); margin-bottom: 5px;">PAUSED</h2>
         <button class="btn btn-red" onclick="leaveGame()">🚪 LEAVE GAME</button>
-        <button class="btn btn-dark" onclick="window.location.reload()">🔄 RESTART APP</button>
         <button class="btn btn-dark" onclick="closeMenu()">▶️ RESUME</button>
+        
         <div class="pull-handle"></div>
     </div>
 
@@ -195,20 +178,18 @@
         let startY = 0;
         let isDragging = false;
 
-        // PULL GESTURE LOGIC
         trigger.addEventListener('touchstart', e => {
             startY = e.touches[0].clientY;
             isDragging = true;
-            menu.style.transition = 'none'; // Instant response
+            menu.style.transition = 'none';
         }, {passive: true});
 
         document.addEventListener('touchmove', e => {
             if (!isDragging) return;
             const y = e.touches[0].clientY;
-            const pullDistance = Math.max(0, Math.min(y - startY, menu.offsetHeight + 50));
+            const pullDistance = Math.max(0, Math.min(y - startY, menu.offsetHeight + 40));
             const percentage = -100 + (pullDistance / menu.offsetHeight * 100);
             
-            // Apply transform using requestAnimationFrame for smoothness
             window.requestAnimationFrame(() => {
                 menu.style.transform = `translateY(${percentage}%)`;
             });
@@ -217,14 +198,13 @@
         document.addEventListener('touchend', e => {
             if (!isDragging) return;
             isDragging = false;
-            menu.style.transition = 'transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.1)'; // Snap effect
+            menu.style.transition = 'transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.1)';
             
             const endY = e.changedTouches[0].clientY;
-            if (endY - startY > 120) {
-                menu.style.transform = 'translateY(0%)'; // Snap Open
-                if (navigator.vibrate) navigator.vibrate(15);
+            if (endY - startY > 100) {
+                menu.style.transform = 'translateY(0%)';
             } else {
-                menu.style.transform = 'translateY(-100%)'; // Snap Closed
+                menu.style.transform = 'translateY(-100%)';
             }
         });
 
@@ -233,7 +213,6 @@
             menu.style.transform = 'translateY(-100%)';
         }
 
-        // NAVIGATION & GAME LOGIC
         function loadGame(url) {
             const frame = document.getElementById('game-frame');
             frame.src = url;
@@ -265,16 +244,13 @@
             });
         }
 
-        // INIT GAMES
         const gamesList = [
             { n: 'Stickman Hook', u: 'g/stickmanhook.html', i: 'stickmanhook.png' },
             { n: 'Drive Mad', u: 'g/g/drivemad/drivemad.html', i: 'drivemad.png' },
             { n: '2048', u: 'g/2048.html', i: '2048.png' },
             { n: 'Cookie Clicker', u: 'g/g/cookie/index.html', i: 'cookieclicker.png' },
             { n: 'Geometry Dash', u: 'g/geometrydash.html', i: 'geometrydash.png' },
-            { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' },
-            { n: 'Stack', u: 'g/stack.html', i: 'stack.png' },
-            { n: 'Wordle', u: 'g/wordle.html', i: 'wordle.png' }
+            { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' }
         ];
 
         const grid = document.getElementById('grid');

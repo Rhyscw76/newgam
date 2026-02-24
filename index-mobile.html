@@ -6,69 +6,75 @@
     <title>Gams Mobile</title>
     <link rel="icon" id="tab-icon" href="img/gams-g.png">
     <style>
-        :root { --p: #f00; --bg: rgba(15,15,15,0.98); }
+        :root { 
+            --p: #f00; 
+            --bg: rgba(15,15,15,0.98); 
+            --txt: #fff;
+            --tile: rgba(255, 255, 255, 0.05);
+            --brd: rgba(255, 255, 255, 0.1);
+        }
         
+        body.light-mode {
+            --p: #007aff;
+            --bg: rgba(245, 245, 247, 0.98);
+            --txt: #000;
+            --tile: rgba(0, 0, 0, 0.05);
+            --brd: rgba(0, 0, 0, 0.1);
+        }
+
         * { margin:0; padding:0; box-sizing:border-box; -webkit-user-select:none; user-select:none; }
         
         html, body { 
             background: #000; height: 100%; width: 100%; 
             overflow: hidden; overscroll-behavior: none; 
-            font-family: 'Segoe UI', sans-serif; color: #fff;
+            font-family: 'Segoe UI', sans-serif; color: var(--txt);
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
-        /* SVG BACKGROUND RENDER FIX - Bleeds into safe areas */
+        body.light-mode { background: #fff; }
+
         .bg-layer {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background: url('ibg.svg') center/cover no-repeat;
             z-index: 1;
         }
         .bg-overlay {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background: rgba(0,0,0,0.4);
             z-index: 2;
+            transition: background 0.3s ease;
         }
+        body.light-mode .bg-overlay { background: rgba(255,255,255,0.8); }
 
-        /* GESTURE TRIGGER */
         #pull-trigger {
             position: fixed; top: 0; left: 0; width: 100%; height: 60px;
             z-index: 1000000; background: transparent; touch-action: none;
         }
 
-        /* HUD MENU with Reload Icon and Safe Area Padding */
         #pull-menu {
             position: fixed; top: 0; left: 0; width: 100%;
             background: var(--bg);
             backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             border-bottom: 3px solid var(--p);
             z-index: 999999;
-            transform: translateY(-100%);
+            transform: translateY(-101%);
             will-change: transform;
-            padding: calc(env(safe-area-inset-top) + 20px) 20px 35px;
+            padding: calc(env(safe-area-inset-top) + 10px) 20px 30px;
             display: flex; flex-direction: column; gap: 12px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.9); text-align: center;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5); text-align: center;
         }
 
         .menu-reload-btn {
             position: absolute;
-            top: calc(env(safe-area-inset-top) + 10px);
+            top: calc(env(safe-area-inset-top) + 5px);
             right: 20px;
-            font-size: 1.8rem; background: none; border: none; color: #fff;
+            font-size: 1.8rem; background: none; border: none; color: var(--txt);
             opacity: 0.7; cursor: pointer; padding: 10px;
         }
-        .menu-reload-btn:active { transform: rotate(90deg); transition: 0.2s; opacity: 1; }
 
-        .pull-handle {
-            position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
-            width: 50px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px;
-        }
-
-        /* MAIN UI CONTAINER */
         .mobile-container {
             position: fixed; inset: 0; display: flex; flex-direction: column;
-            z-index: 10;
-            padding-top: env(safe-area-inset-top);
+            z-index: 10; padding-top: env(safe-area-inset-top);
         }
 
         #game-frame {
@@ -77,63 +83,72 @@
         }
 
         .mobile-header { 
-            padding: 15px; 
-            border-bottom: 3px solid var(--p); 
-            flex-shrink: 0; 
-            background: rgba(0,0,0,0.7); 
+            padding: 15px; border-bottom: 3px solid var(--p); 
+            flex-shrink: 0; background: rgba(0,0,0,0.1); 
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .mobile-header h1 { font-size: 1.4rem; letter-spacing: 2px; text-align: center; font-weight: 900; }
 
-        .mobile-search { padding: 12px; flex-shrink: 0; }
+        .mobile-search { padding: 12px; }
         .mobile-search input { 
-            width: 100%; padding: 14px; 
-            background: rgba(255,255,255,0.1); 
-            border: 1.5px solid rgba(255,255,255,0.1); 
-            border-radius: 12px; color: #fff; font-size: 16px; 
+            width: 100%; padding: 12px; background: var(--tile); 
+            border: 1.5px solid var(--brd); border-radius: 12px; color: var(--txt); 
         }
 
-        .mobile-content { 
-            flex: 1; 
-            overflow-y: auto; 
-            -webkit-overflow-scrolling: touch; 
-            padding-bottom: 50px;
-        }
+        .mobile-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 40px; }
         .mobile-game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
         
         .mobile-tile { 
-            background: rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(15px); 
-            border-radius: 18px; padding: 10px; 
-            text-align: center; border: 1.5px solid rgba(255,255,255,0.1); 
+            background: var(--tile); backdrop-filter: blur(15px); 
+            border-radius: 18px; padding: 10px; text-align: center; border: 1.5px solid var(--brd); 
         }
         .mobile-tile img { width: 100%; border-radius: 14px; margin-bottom: 8px; }
-        .mobile-tile-name { font-size: 0.8rem; font-weight: 700; color: #fff; }
 
-        .btn { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 900; text-transform: uppercase; font-size: 0.9rem; }
+        .btn { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 900; text-transform: uppercase; }
         .btn-red { background: var(--p); color: #fff; }
         .btn-dark { background: #1a1a1a; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+        body.light-mode .btn-dark { background: #fff; color: #000; border: 1px solid #ccc; }
+
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            z-index: 2000000; display: none; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: var(--bg); width: 85%; padding: 25px; border-radius: 20px;
+            border: 2px solid var(--p); text-align: center;
+        }
     </style>
 </head>
 <body>
 
     <div class="bg-layer"></div>
     <div class="bg-overlay"></div>
-
     <div id="pull-trigger"></div>
 
     <div id="pull-menu">
         <button class="menu-reload-btn" onclick="location.reload()">↻</button>
         <h2 style="color:var(--p); margin-bottom: 5px;">PAUSED</h2>
         <button class="btn btn-red" onclick="leaveGame()">🚪 EXIT GAME</button>
-        <button class="btn btn-dark" onclick="closeMenu()">▶️ RESUME</button>
-        <div class="pull-handle"></div>
+        <button class="btn btn-dark" style="margin-top: 5px;" onclick="closeMenu()">▶️ RESUME</button>
+        <div style="height:20px;"></div>
+    </div>
+
+    <div id="settings-modal" class="modal" onclick="if(event.target===this) toggleSettings()">
+        <div class="modal-content">
+            <h2 style="margin-bottom:20px;">Settings</h2>
+            <button class="btn btn-dark" onclick="toggleTheme()" id="theme-btn">☀️ Light Mode</button>
+            <div style="height:15px;"></div>
+            <button class="btn btn-red" onclick="toggleSettings()">Close</button>
+        </div>
     </div>
 
     <iframe id="game-frame"></iframe>
 
     <div class="mobile-container" id="main-ui">
         <div class="mobile-header">
-            <h1>GAMS</h1>
+            <h1 style="letter-spacing: 2px;">GAMS</h1>
+            <div style="display:flex; gap:8px;">
+                <button class="btn-dark" style="padding:8px 12px; font-size:1.1rem; border-radius:8px;" onclick="toggleSettings()">⚙️</button>
+            </div>
         </div>
         
         <div class="mobile-search">
@@ -150,6 +165,35 @@
         const trigger = document.getElementById('pull-trigger');
         let startY = 0; let isDragging = false;
 
+        // SAVE PREFERENCES LOGIC
+        function loadSavedTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('theme-btn').innerText = "🌙 Dark Mode";
+            }
+        }
+
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light-mode');
+            const themeBtn = document.getElementById('theme-btn');
+            
+            if (isLight) {
+                themeBtn.innerText = "🌙 Dark Mode";
+                localStorage.setItem('theme', 'light');
+            } else {
+                themeBtn.innerText = "☀️ Light Mode";
+                localStorage.setItem('theme', 'dark');
+            }
+            if (navigator.vibrate) navigator.vibrate(10);
+        }
+
+        function toggleSettings() {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        // PULL GESTURE
         trigger.addEventListener('touchstart', e => {
             startY = e.touches[0].clientY; isDragging = true;
             menu.style.transition = 'none';
@@ -158,8 +202,8 @@
         document.addEventListener('touchmove', e => {
             if (!isDragging) return;
             const y = e.touches[0].clientY;
-            const pullDistance = Math.max(0, Math.min(y - startY, menu.offsetHeight + 40));
-            const percentage = -100 + (pullDistance / menu.offsetHeight * 100);
+            const pullDistance = Math.max(0, Math.min(y - startY, menu.offsetHeight + 50));
+            const percentage = -101 + (pullDistance / menu.offsetHeight * 100);
             window.requestAnimationFrame(() => { menu.style.transform = `translateY(${percentage}%)`; });
         }, {passive: true});
 
@@ -167,40 +211,31 @@
             if (!isDragging) return;
             isDragging = false;
             menu.style.transition = 'transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.1)';
-            const endY = e.changedTouches[0].clientY;
-            if (endY - startY > 100) { menu.style.transform = 'translateY(0%)'; } 
-            else { menu.style.transform = 'translateY(-100%)'; }
+            if (e.changedTouches[0].clientY - startY > 100) { menu.style.transform = 'translateY(0%)'; } 
+            else { menu.style.transform = 'translateY(-101%)'; }
         });
 
-        function closeMenu() { 
-            menu.style.transition = 'transform 0.3s ease'; 
-            menu.style.transform = 'translateY(-100%)'; 
-        }
+        function closeMenu() { menu.style.transition = 'transform 0.3s ease'; menu.style.transform = 'translateY(-101%)'; }
 
         function loadGame(url) {
             const frame = document.getElementById('game-frame');
-            frame.src = url;
-            frame.style.display = 'block';
+            frame.src = url; frame.style.display = 'block';
             document.getElementById('main-ui').style.display = 'none';
             closeMenu();
         }
 
         function leaveGame() {
             const frame = document.getElementById('game-frame');
-            frame.src = '';
-            frame.style.display = 'none';
+            frame.src = ''; frame.style.display = 'none';
             document.getElementById('main-ui').style.display = 'flex';
             closeMenu();
         }
 
         function search(q) {
             const tiles = document.querySelectorAll('.mobile-tile');
-            tiles.forEach(t => {
-                t.style.display = t.innerText.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
-            });
+            tiles.forEach(t => { t.style.display = t.innerText.toLowerCase().includes(q.toLowerCase()) ? '' : 'none'; });
         }
 
-        // VERIFIED WORKING MOBILE GAMES LIST
         const gamesList = [
             { n: 'Stickman Hook', u: 'g/stickmanhook.html', i: 'stickmanhook.png' },
             { n: 'Drive Mad', u: 'g/g/drivemad/drivemad.html', i: 'drivemad.png' },
@@ -208,7 +243,7 @@
             { n: 'Cookie Clicker', u: 'g/g/cookie/index.html', i: 'cookieclicker.png' },
             { n: 'Its Raining Boxes', u: 'g/itsrainingboxes.html', i: 'itsrainingboxes.png' },
             { n: 'Stack', u: 'g/stack.html', i: 'stack.png' },
-            { n: 'Rolling Forest', u: 'g/rollingforests.html', i: 'rollingforests.png' },
+            { n: 'Rolling Forests', u: 'g/rollingforests.html', i: 'rollingforests.png' },
             { n: 'Fluid Simulator', u: 'g/fluidsimulator.html', i: 'fluidsimulator.png' },
             { n: 'Geometry Dash', u: 'g/geometrydash.html', i: 'geometrydash.png' },
             { n: 'Wordle+', u: 'g/wordle.html', i: 'wordle.png' },
@@ -221,13 +256,13 @@
         gamesList.forEach(g => {
             const div = document.createElement('div');
             div.className = 'mobile-tile';
-            div.innerHTML = `<img src="img/${g.i}" onerror="this.src='img/gams-g.png'"><div class="mobile-tile-name">${g.n}</div>`;
-            div.onclick = () => {
-                if (navigator.vibrate) navigator.vibrate(10);
-                loadGame(g.u);
-            };
+            div.innerHTML = `<img src="img/${g.i}" onerror="this.src='img/gams-g.png'"><div>${g.n}</div>`;
+            div.onclick = () => loadGame(g.u);
             grid.appendChild(div);
         });
+
+        // Initialize theme on load
+        window.onload = loadSavedTheme;
     </script>
 </body>
 </html>

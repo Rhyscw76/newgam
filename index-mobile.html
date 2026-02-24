@@ -16,7 +16,7 @@
             font-family: 'Segoe UI', sans-serif; color: #fff;
         }
 
-        /* SVG BACKGROUND RENDER FIX */
+        /* SVG BACKGROUND RENDER FIX - Bleeds into safe areas */
         .bg-layer {
             position: fixed;
             inset: 0;
@@ -36,7 +36,7 @@
             z-index: 1000000; background: transparent; touch-action: none;
         }
 
-        /* HUD MENU */
+        /* HUD MENU with Reload Icon and Safe Area Padding */
         #pull-menu {
             position: fixed; top: 0; left: 0; width: 100%;
             background: var(--bg);
@@ -57,13 +57,14 @@
             font-size: 1.8rem; background: none; border: none; color: #fff;
             opacity: 0.7; cursor: pointer; padding: 10px;
         }
+        .menu-reload-btn:active { transform: rotate(90deg); transition: 0.2s; opacity: 1; }
 
         .pull-handle {
             position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
             width: 50px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px;
         }
 
-        /* MAIN UI */
+        /* MAIN UI CONTAINER */
         .mobile-container {
             position: fixed; inset: 0; display: flex; flex-direction: column;
             z-index: 10;
@@ -87,11 +88,10 @@
         .mobile-search input { 
             width: 100%; padding: 14px; 
             background: rgba(255,255,255,0.1); 
-            border: 1px solid rgba(255,255,255,0.1); 
+            border: 1.5px solid rgba(255,255,255,0.1); 
             border-radius: 12px; color: #fff; font-size: 16px; 
         }
 
-        /* SCROLLING GAMES GRID */
         .mobile-content { 
             flex: 1; 
             overflow-y: auto; 
@@ -123,8 +123,8 @@
 
     <div id="pull-menu">
         <button class="menu-reload-btn" onclick="location.reload()">↻</button>
-        <h2 style="color:var(--p); margin-bottom: 5px;">GAME PAUSED</h2>
-        <button class="btn btn-red" onclick="leaveGame()">🚪 EXIT TO MENU</button>
+        <h2 style="color:var(--p); margin-bottom: 5px;">PAUSED</h2>
+        <button class="btn btn-red" onclick="leaveGame()">🚪 EXIT GAME</button>
         <button class="btn btn-dark" onclick="closeMenu()">▶️ RESUME</button>
         <div class="pull-handle"></div>
     </div>
@@ -150,7 +150,6 @@
         const trigger = document.getElementById('pull-trigger');
         let startY = 0; let isDragging = false;
 
-        // PULL ANIMATION LOGIC
         trigger.addEventListener('touchstart', e => {
             startY = e.touches[0].clientY; isDragging = true;
             menu.style.transition = 'none';
@@ -169,10 +168,7 @@
             isDragging = false;
             menu.style.transition = 'transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.1)';
             const endY = e.changedTouches[0].clientY;
-            if (endY - startY > 100) { 
-                menu.style.transform = 'translateY(0%)'; 
-                if (navigator.vibrate) navigator.vibrate(10);
-            } 
+            if (endY - startY > 100) { menu.style.transform = 'translateY(0%)'; } 
             else { menu.style.transform = 'translateY(-100%)'; }
         });
 
@@ -181,7 +177,6 @@
             menu.style.transform = 'translateY(-100%)'; 
         }
 
-        // GAME LOADER
         function loadGame(url) {
             const frame = document.getElementById('game-frame');
             frame.src = url;
@@ -205,16 +200,21 @@
             });
         }
 
-        // GAME LIST
+        // VERIFIED WORKING MOBILE GAMES LIST
         const gamesList = [
             { n: 'Stickman Hook', u: 'g/stickmanhook.html', i: 'stickmanhook.png' },
             { n: 'Drive Mad', u: 'g/g/drivemad/drivemad.html', i: 'drivemad.png' },
             { n: '2048', u: 'g/2048.html', i: '2048.png' },
             { n: 'Cookie Clicker', u: 'g/g/cookie/index.html', i: 'cookieclicker.png' },
+            { n: 'Its Raining Boxes', u: 'g/itsrainingboxes.html', i: 'itsrainingboxes.png' },
+            { n: 'Stack', u: 'g/stack.html', i: 'stack.png' },
+            { n: 'Rolling Forest', u: 'g/rollingforests.html', i: 'rollingforests.png' },
+            { n: 'Fluid Simulator', u: 'g/fluidsimulator.html', i: 'fluidsimulator.png' },
             { n: 'Geometry Dash', u: 'g/geometrydash.html', i: 'geometrydash.png' },
+            { n: 'Wordle+', u: 'g/wordle.html', i: 'wordle.png' },
             { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' },
-            { n: 'Retro Bowl', u: 'g/retrobowl.html', i: 'retrobowl.png' },
-            { n: 'Bitlife', u: 'g/bitlife.html', i: 'bitlife.png' }
+            { n: 'Raft Wars 1', u: 'g/raftwars.html', i: 'raftwars.png' },
+            { n: 'Raft Wars 2', u: 'g/raftwars2.html', i: 'raftwars2.png' }
         ];
 
         const grid = document.getElementById('grid');
@@ -222,7 +222,10 @@
             const div = document.createElement('div');
             div.className = 'mobile-tile';
             div.innerHTML = `<img src="img/${g.i}" onerror="this.src='img/gams-g.png'"><div class="mobile-tile-name">${g.n}</div>`;
-            div.onclick = () => loadGame(g.u);
+            div.onclick = () => {
+                if (navigator.vibrate) navigator.vibrate(10);
+                loadGame(g.u);
+            };
             grid.appendChild(div);
         });
     </script>

@@ -22,8 +22,7 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            /* UPDATED: Lighter overlay (0.4 instead of 0.9) makes ibg.svg much more visible */
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('ibg.svg') center/cover no-repeat;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('ibg.svg') center/cover no-repeat;
             overflow: hidden;
             z-index: 100000;
             animation: fadeIn 0.3s ease-in;
@@ -39,7 +38,6 @@
             justify-content: space-between;
             gap: 10px;
             flex-shrink: 0;
-            box-shadow: 0 4px 15px rgba(255,0,0,0.2);
         }
 
         .mobile-header h1 {
@@ -96,7 +94,6 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* SECTION FIX: Strictly hidden unless active */
         .mobile-section {
             display: none; 
             flex-direction: column;
@@ -112,19 +109,15 @@
             padding: 14px;
         }
 
-        /* TILE VISIBILITY: Higher transparency (0.4) and blur makes bg visible through tiles */
         .mobile-tile {
-            background: rgba(20, 20, 20, 0.4); 
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(20, 20, 20, 0.3); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 16px;
             padding: 10px;
             text-align: center;
-            transition: transform 0.2s;
         }
-
-        .mobile-tile:active { transform: scale(0.95); background: rgba(255,0,0,0.2); }
 
         .mobile-tile img {
             width: 100%;
@@ -132,56 +125,58 @@
             border-radius: 12px;
             object-fit: cover;
             margin-bottom: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         .mobile-tile-name { font-size: 0.75rem; font-weight: 700; color: #fff; }
 
         .mobile-search { padding: 12px; }
+
+        /* FIX: Font-size 16px prevents the browser from zooming in on click */
         .mobile-search input {
             width: 100%;
-            padding: 12px;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
+            padding: 10px 14px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(15px);
             border: 1px solid var(--b);
-            border-radius: 10px;
+            border-radius: 12px;
             color: #fff;
+            font-size: 16px; 
         }
 
-        /* MODAL STYLES */
         .mobile-modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             z-index: 500001;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
         }
         .mobile-modal.active { display: flex; }
         .mobile-modal-content {
-            background: #1a1a1a;
+            background: #111;
             padding: 25px;
             border-radius: 20px;
-            border: 2px solid var(--p);
+            border: 1.5px solid var(--p);
             width: 100%;
             max-width: 320px;
             text-align: center;
+            box-shadow: 0 0 30px rgba(255,0,0,0.2);
         }
         .modal-btn {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             margin-top: 10px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: none;
             font-weight: 900;
             text-transform: uppercase;
             cursor: pointer;
         }
         .btn-red { background: var(--p); color: #fff; }
-        .btn-dark { background: #333; color: #fff; }
+        .btn-dark { background: #222; color: #fff; }
 
         .mobile-eaglercraft-section { justify-content: center; align-items: center; padding: 20px; }
     </style>
@@ -203,7 +198,7 @@
         </div>
 
         <div class="mobile-search" id="search-bar">
-            <input type="text" id="mobile-search" placeholder="Search for a game..." oninput="mobileDoSearch()">
+            <input type="text" id="mobile-search" placeholder="Search..." oninput="mobileDoSearch()">
         </div>
 
         <div class="mobile-content">
@@ -212,10 +207,10 @@
             </div>
 
             <div id="mobile-eaglercraft-section" class="mobile-section mobile-eaglercraft-section">
-                <div class="mobile-tile" style="padding: 40px; width: 80%;">
+                <div class="mobile-tile" style="padding: 40px; width: 85%;">
                     <h2 style="margin-bottom: 10px;">MINECRAFT</h2>
-                    <p style="font-size: 0.8rem; margin-bottom: 20px; opacity: 0.7;">Eaglercraft 1.8.8</p>
-                    <button class="modal-btn btn-red" onclick="window.location.href='g/aminecraftfolder/wasm_gc_jspi_offline/eaglercraft_wasm_gc_jspi_offline.html'">Launch</button>
+                    <p style="font-size: 0.8rem; margin-bottom: 20px; opacity: 0.7;">1.8.8 Offline Mode</p>
+                    <button class="modal-btn btn-red" onclick="window.location.href='g/aminecraftfolder/wasm_gc_jspi_offline/eaglercraft_wasm_gc_jspi_offline.html'">Launch Game</button>
                 </div>
             </div>
         </div>
@@ -223,8 +218,10 @@
 
     <div id="pc-modal" class="mobile-modal">
         <div class="mobile-modal-content">
-            <h2 style="color:var(--p)">Switch to PC?</h2>
-            <p style="margin: 15px 0; font-size: 0.85rem; opacity: 0.8;">The PC version is not optimized for small touch screens and majority of the games will still need keyboard and a mouse or trackpad.</p>
+            <h2 style="color:var(--p); font-size: 1.4rem;">Switch to PC?</h2>
+            <p style="margin: 15px 0; font-size: 0.85rem; line-height: 1.4; opacity: 0.9;">
+                Warning: The desktop version <b>requires a keyboard and mouse/trackpad</b> for the majority of games.
+            </p>
             <button class="modal-btn btn-red" onclick="window.location.href='index-desktop.html'">Open PC Version</button>
             <button class="modal-btn btn-dark" onclick="mobileTglModal('pc-modal')">Stay on Mobile</button>
         </div>
@@ -233,7 +230,7 @@
     <div id="settings-modal" class="mobile-modal">
         <div class="mobile-modal-content">
             <h2>Settings</h2>
-            <button class="modal-btn btn-dark" onclick="location.reload()">🔄 Refresh App</button>
+            <button class="modal-btn btn-dark" onclick="location.reload()">🔄 Force Refresh</button>
             <button class="modal-btn btn-red" onclick="mobileTglModal('settings-modal')">Close</button>
         </div>
     </div>
@@ -263,7 +260,7 @@
                 
                 const img = document.createElement('img');
                 img.src = `img/${game.img}`;
-                img.onerror = () => { img.src = 'img/gams-g.png'; }; // Fallback image
+                img.onerror = () => { img.src = 'img/gams-g.png'; };
                 
                 const name = document.createElement('div');
                 name.className = 'mobile-tile-name';
@@ -279,11 +276,8 @@
         function mobileChangeTab(tab, btn) {
             document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.mobile-section').forEach(s => s.classList.remove('active'));
-            
             btn.classList.add('active');
             document.getElementById(`mobile-${tab}-section`).classList.add('active');
-            
-            // Hide search bar if on Eaglercraft
             document.getElementById('search-bar').style.display = (tab === 'eaglercraft') ? 'none' : 'block';
         }
 

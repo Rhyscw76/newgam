@@ -6,7 +6,7 @@
     <title>Gams Mobile</title>
     <link rel="icon" id="tab-icon" href="img/gams-g.png">
     <style>
-        :root { --p: #f00; --bg: rgba(10,10,10,0.95); }
+        :root { --p: #f00; --bg: rgba(10,10,10,0.98); }
         * { margin:0; padding:0; box-sizing:border-box; -webkit-user-select:none; user-select:none; }
         
         html, body { 
@@ -14,40 +14,35 @@
             overflow: hidden; overscroll-behavior: none; font-family: 'Segoe UI', sans-serif;
         }
 
-        /* THE PULL MENU - Higher z-index than everything */
+        /* THE PULL MENU */
         #pull-menu {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: auto;
             background: var(--bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border-bottom: 3px solid var(--p);
             z-index: 999999;
-            transform: translateY(-100%); /* Hidden by default */
-            transition: transform 0.1s linear; /* Fast response during drag */
-            padding: 40px 20px;
+            transform: translateY(-100%);
+            will-change: transform; /* Performance boost */
+            padding: 50px 20px 30px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.8);
             text-align: center;
         }
 
-        #pull-menu.snapping {
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
         .pull-handle {
             position: absolute;
-            bottom: 10px;
+            bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
-            width: 40px;
-            height: 4px;
-            background: rgba(255,255,255,0.3);
+            width: 45px;
+            height: 5px;
+            background: rgba(255,255,255,0.2);
             border-radius: 10px;
         }
 
@@ -57,18 +52,18 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 50px;
-            z-index: 1000000; /* Highest layer */
+            height: 60px;
+            z-index: 1000000;
             background: transparent;
+            touch-action: none; /* CRITICAL: Stops browser stutter/refresh */
         }
 
-        /* CONTAINER FOR SITE & IFRAME */
         .mobile-container {
             position: fixed;
             inset: 0;
             display: flex;
             flex-direction: column;
-            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('ibg.svg') center/cover no-repeat;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('ibg.svg') center/cover no-repeat;
             z-index: 10;
         }
 
@@ -84,23 +79,39 @@
         }
 
         /* UI ELEMENTS */
-        .mobile-header { padding: 15px; border-bottom: 2px solid var(--p); background: rgba(0,0,0,0.8); }
-        .mobile-tabs { display: flex; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .mobile-tab { flex: 1; padding: 15px; text-align: center; font-weight: bold; font-size: 0.8rem; color: #888; text-transform: uppercase; }
-        .mobile-tab.active { color: #fff; border-bottom: 3px solid var(--p); }
+        .mobile-header { padding: 18px; border-bottom: 2px solid var(--p); background: rgba(0,0,0,0.8); text-align: center; }
+        .mobile-header h1 { font-size: 1.4rem; letter-spacing: 3px; font-weight: 900; }
+        
+        .mobile-tabs { display: flex; background: rgba(0,0,0,0.6); }
+        .mobile-tab { flex: 1; padding: 15px; text-align: center; font-weight: 800; font-size: 0.75rem; color: #666; text-transform: uppercase; border-bottom: 2px solid transparent; }
+        .mobile-tab.active { color: #fff; border-bottom-color: var(--p); background: rgba(255,0,0,0.05); }
 
-        .mobile-search { padding: 10px; }
-        .mobile-search input { width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; font-size: 16px; }
+        .mobile-search { padding: 12px; }
+        .mobile-search input { 
+            width: 100%; padding: 14px; 
+            background: rgba(255,255,255,0.07); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 12px; color: #fff; font-size: 16px; 
+        }
 
-        .mobile-game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; overflow-y: auto; }
-        .mobile-tile { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 15px; padding: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-        .mobile-tile img { width: 100%; border-radius: 10px; margin-bottom: 5px; }
+        .mobile-game-grid { 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; 
+            padding: 12px; overflow-y: auto; flex: 1;
+        }
+        .mobile-tile { 
+            background: rgba(255,255,255,0.03); 
+            backdrop-filter: blur(10px); 
+            border-radius: 18px; padding: 10px; 
+            text-align: center; border: 1px solid rgba(255,255,255,0.08); 
+        }
+        .mobile-tile img { width: 100%; border-radius: 14px; margin-bottom: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .mobile-tile div { font-size: 0.8rem; font-weight: 600; }
 
-        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; cursor: pointer; }
-        .btn-red { background: var(--p); color: #fff; }
-        .btn-dark { background: #222; color: #fff; }
+        .btn { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; font-size: 0.9rem; }
+        .btn-red { background: var(--p); color: #fff; box-shadow: 0 4px 15px rgba(255,0,0,0.3); }
+        .btn-dark { background: #1a1a1a; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
 
-        .section { display: none; }
+        .section { display: none; height: 100%; }
         .section.active { display: block; }
     </style>
 </head>
@@ -109,7 +120,7 @@
     <div id="pull-trigger"></div>
 
     <div id="pull-menu">
-        <h2 style="color:var(--p)">GAME PAUSED</h2>
+        <h2 style="color:var(--p); margin-bottom: 5px;">PAUSED</h2>
         <button class="btn btn-red" onclick="leaveGame()">🚪 Leave Game</button>
         <button class="btn btn-dark" onclick="location.reload()">🔄 Restart App</button>
         <button class="btn btn-dark" onclick="closeMenu()">▶️ Resume</button>
@@ -134,76 +145,78 @@
         </div>
 
         <div id="eaglercraft" class="section">
-            <div style="padding: 40px;">
-                <div class="mobile-tile" style="padding: 30px;">
-                    <h3>Eaglercraft 1.8.8</h3>
-                    <button class="btn btn-red" style="margin-top:20px" onclick="loadGame('g/aminecraftfolder/wasm_gc_jspi_offline/eaglercraft_wasm_gc_jspi_offline.html')">Launch</button>
+            <div style="padding: 30px; display: flex; align-items: center; justify-content: center; height: 80%;">
+                <div class="mobile-tile" style="padding: 40px; width: 100%;">
+                    <h3 style="margin-bottom:20px">Minecraft 1.8.8</h3>
+                    <button class="btn btn-red" onclick="loadGame('g/aminecraftfolder/wasm_gc_jspi_offline/eaglercraft_wasm_gc_jspi_offline.html')">Launch Game</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // PULL LOGIC
         const menu = document.getElementById('pull-menu');
         const trigger = document.getElementById('pull-trigger');
         let startY = 0;
-        let currentY = 0;
         let isDragging = false;
+        let currentTranslate = -100;
 
-        document.addEventListener('touchstart', e => {
-            if (e.touches[0].clientY < 60) {
-                startY = e.touches[0].clientY;
-                isDragging = true;
-                menu.classList.remove('snapping');
-            }
-        });
+        // Smooth Animation Frame logic
+        function updateMenuPos(y) {
+            if (!isDragging) return;
+            const height = menu.offsetHeight;
+            const pullDistance = Math.max(0, Math.min(y - startY, height + 50));
+            const percentage = -100 + (pullDistance / height * 100);
+            menu.style.transform = `translateY(${percentage}%)`;
+            requestAnimationFrame(() => {});
+        }
+
+        trigger.addEventListener('touchstart', e => {
+            startY = e.touches[0].clientY;
+            isDragging = true;
+            menu.style.transition = 'none'; // Disable transition for raw tracking
+        }, {passive: true});
 
         document.addEventListener('touchmove', e => {
             if (!isDragging) return;
-            currentY = e.touches[0].clientY - startY;
-            
-            // Allow pulling down up to 300px
-            if (currentY > 0 && currentY < 350) {
-                let progress = -100 + (currentY / 3); 
-                menu.style.transform = `translateY(${progress}%)`;
-            }
-        });
+            const y = e.touches[0].clientY;
+            updateMenuPos(y);
+        }, {passive: true});
 
-        document.addEventListener('touchend', () => {
+        document.addEventListener('touchend', e => {
             if (!isDragging) return;
             isDragging = false;
-            menu.classList.add('snapping');
+            menu.style.transition = 'transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.1)';
             
-            if (currentY > 120) {
-                menu.style.transform = `translateY(0%)`; // Snap Open
+            const endY = e.changedTouches[0].clientY;
+            if (endY - startY > 100) {
+                menu.style.transform = 'translateY(0%)';
             } else {
-                menu.style.transform = `translateY(-100%)`; // Snap Closed
+                menu.style.transform = 'translateY(-100%)';
             }
-            currentY = 0;
         });
 
         function closeMenu() {
-            menu.classList.add('snapping');
-            menu.style.transform = `translateY(-100%)`;
+            menu.style.transition = 'transform 0.3s ease';
+            menu.style.transform = 'translateY(-100%)';
         }
 
-        // GAME LOGIC
         function loadGame(url) {
-            document.getElementById('game-frame').src = url;
-            document.getElementById('game-frame').style.display = 'block';
+            const frame = document.getElementById('game-frame');
+            frame.src = url;
+            frame.style.display = 'block';
             document.getElementById('main-ui').style.display = 'none';
             closeMenu();
         }
 
         function leaveGame() {
-            document.getElementById('game-frame').src = '';
-            document.getElementById('game-frame').style.display = 'none';
+            const frame = document.getElementById('game-frame');
+            frame.src = '';
+            frame.style.display = 'none';
             document.getElementById('main-ui').style.display = 'flex';
             closeMenu();
         }
 
-        // TABS & SEARCH
         function switchTab(id, el) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
@@ -219,20 +232,20 @@
             });
         }
 
-        // INIT
         const gamesList = [
             { n: 'Stickman Hook', u: 'g/stickmanhook.html', i: 'stickmanhook.png' },
             { n: 'Drive Mad', u: 'g/g/drivemad/drivemad.html', i: 'drivemad.png' },
             { n: '2048', u: 'g/2048.html', i: '2048.png' },
             { n: 'Cookie Clicker', u: 'g/g/cookie/index.html', i: 'cookieclicker.png' },
-            { n: 'Geometry Dash', u: 'g/geometrydash.html', i: 'geometrydash.png' }
+            { n: 'Geometry Dash', u: 'g/geometrydash.html', i: 'geometrydash.png' },
+            { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' }
         ];
 
         const grid = document.getElementById('grid');
         gamesList.forEach(g => {
             const div = document.createElement('div');
             div.className = 'mobile-tile';
-            div.innerHTML = `<img src="img/${g.i}"><div>${g.n}</div>`;
+            div.innerHTML = `<img src="img/${g.i}" onerror="this.src='img/gams-g.png'"><div>${g.n}</div>`;
             div.onclick = () => loadGame(g.u);
             grid.appendChild(div);
         });

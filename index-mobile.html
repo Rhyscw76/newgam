@@ -5,152 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gams Mobile</title>
     <style>
-        :root { 
-            --p: #f00; 
-            --txt: #fff;
-            --tile: rgba(255, 255, 255, 0.08);
-            --brd: rgba(255, 255, 255, 0.15);
+        /* SIMPLEST BACKGROUND METHOD */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            background-image: url('ibg.svg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            font-family: sans-serif;
+            color: #fff;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
         }
 
-        * { margin:0; padding:0; box-sizing:border-box; -webkit-user-select:none; user-select:none; }
-        
-        /* THE FIX: Body must be transparent to see the SVG fixed behind it */
-        html, body { 
-            height: 100%; width: 100%; 
-            overflow: hidden; font-family: sans-serif; 
-            color: var(--txt);
-            background-color: #000; 
-        }
+        * { box-sizing: border-box; -webkit-user-select: none; user-select: none; }
 
-        /* IBG.SVG IMPLEMENTATION */
-        .wallpaper {
+        /* SEMI-TRANSPARENT OVERLAY TO ENSURE TEXT IS READABLE */
+        .main-tint {
             position: fixed;
             inset: 0;
-            background: url('ibg.svg') center/cover no-repeat !important;
-            z-index: 1; /* Lowest Layer */
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
         }
 
-        /* Darkening overlay so you can see the text over the SVG */
-        .overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 2;
-        }
-
-        /* PULL-DOWN MENU (No Gap) */
+        /* PULL MENU */
         #pull-menu {
             position: fixed; top: 0; left: 0; width: 100%;
-            background: rgba(20, 20, 20, 0.95);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-bottom: 3px solid var(--p);
+            background: #111;
+            border-bottom: 3px solid #f00;
             z-index: 10000;
-            transform: translateY(-101%);
+            transform: translateY(-100%);
             padding: calc(env(safe-area-inset-top) + 15px) 20px 30px;
-            transition: transform 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
+            transition: transform 0.3s ease-out;
             text-align: center;
         }
 
-        /* MAIN UI */
-        .app-container {
-            position: relative; height: 100%; width: 100%;
-            display: flex; flex-direction: column;
+        /* UI CONTENT */
+        .app-ui {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
             padding-top: env(safe-area-inset-top);
-            z-index: 10; /* Above wallpaper */
-            background: transparent;
         }
 
         .header { 
-            padding: 15px 20px; 
-            display: flex; justify-content: center; align-items: center;
-            border-bottom: 3px solid var(--p);
-            background: rgba(0,0,0,0.3);
+            padding: 15px; 
+            border-bottom: 3px solid #f00;
+            background: rgba(0,0,0,0.6);
+            text-align: center;
         }
-        .header h1 { font-weight: 900; letter-spacing: 4px; }
 
-        .scroll-area {
-            flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+        .scroll-grid {
+            flex: 1;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
             padding: 15px;
-            background: transparent;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-        .tile { 
-            background: var(--tile); 
-            border: 1px solid var(--brd);
-            border-radius: 20px; padding: 12px; text-align: center;
-            backdrop-filter: blur(10px);
+        .tile {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 10px;
+            text-align: center;
+            backdrop-filter: blur(5px);
         }
-        .tile img { width: 100%; border-radius: 15px; margin-bottom: 8px; }
-        .tile span { font-weight: bold; font-size: 0.85rem; }
+        .tile img { width: 100%; border-radius: 10px; margin-bottom: 5px; }
 
-        /* BUTTONS */
-        .btn { 
-            width: 100%; padding: 16px; border-radius: 15px; border: none; 
-            font-weight: 800; text-transform: uppercase; margin-top: 10px;
-        }
-        .btn-red { background: var(--p); color: #fff; }
+        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; margin-top: 10px; text-transform: uppercase; }
+        .btn-red { background: #f00; color: #fff; }
 
         #game-frame { position: fixed; inset: 0; width: 100%; height: 100%; border: none; z-index: 5000; display: none; background: #000; }
-        #pull-zone { position: fixed; top: 0; left: 0; width: 100%; height: 50px; z-index: 100000; }
+        #pull-hitbox { position: fixed; top: 0; left: 0; width: 100%; height: 40px; z-index: 100000; }
     </style>
 </head>
 <body>
 
-    <div class="wallpaper"></div>
-    <div class="overlay"></div>
+    <div class="main-tint"></div>
 
-    <div id="pull-zone" onclick="openMenu()"></div>
+    <div id="pull-hitbox" onclick="showMenu()"></div>
 
     <div id="pull-menu">
-        <h2 style="color:var(--p); margin-bottom: 15px;">PAUSED</h2>
+        <h2 style="color:#f00; margin-bottom: 10px;">PAUSED</h2>
         <button class="btn btn-red" onclick="exitGame()">EXIT TO MENU</button>
-        <button class="btn" style="background:#444; color:#fff;" onclick="closeMenu()">RESUME</button>
+        <button class="btn" style="background:#333; color:#fff;" onclick="hideMenu()">RESUME</button>
     </div>
 
     <iframe id="game-frame"></iframe>
 
-    <div class="app-container" id="ui-main">
+    <div class="app-ui" id="main-content">
         <div class="header">
-            <h1>GAMS</h1>
+            <h1 style="letter-spacing: 3px;">GAMS</h1>
         </div>
-
-        <div class="scroll-area">
-            <div class="game-grid" id="grid"></div>
-        </div>
+        <div class="scroll-grid" id="grid"></div>
     </div>
 
     <script>
         const menu = document.getElementById('pull-menu');
-        const pullZone = document.getElementById('pull-zone');
-        let startY = 0;
-
-        // GESTURE
-        pullZone.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
-        pullZone.addEventListener('touchmove', e => {
-            if (e.touches[0].clientY - startY > 40) openMenu();
-        });
-
-        function openMenu() { menu.style.transform = 'translateY(0)'; }
-        function closeMenu() { menu.style.transform = 'translateY(-101%)'; }
+        
+        function showMenu() { menu.style.transform = 'translateY(0)'; }
+        function hideMenu() { menu.style.transform = 'translateY(-100%)'; }
 
         function launchGame(url) {
-            const f = document.getElementById('game-frame');
-            f.src = url; f.style.display = 'block';
-            document.getElementById('ui-main').style.display = 'none';
-            closeMenu();
+            const frame = document.getElementById('game-frame');
+            frame.src = url;
+            frame.style.display = 'block';
+            document.getElementById('main-content').style.display = 'none';
+            hideMenu();
         }
 
         function exitGame() {
-            const f = document.getElementById('game-frame');
-            f.src = ''; f.style.display = 'none';
-            document.getElementById('ui-main').style.display = 'flex';
-            closeMenu();
+            const frame = document.getElementById('game-frame');
+            frame.src = '';
+            frame.style.display = 'none';
+            document.getElementById('main-content').style.display = 'flex';
+            hideMenu();
         }
 
-        // ONLY YOUR VERIFIED WORKING GAMES
-        const gamesList = [
+        // VERIFIED WORKING GAMES ONLY
+        const myGames = [
             { n: 'Stickman Hook', u: 'g/stickmanhook.html', i: 'stickmanhook.png' },
             { n: 'Drive Mad', u: 'g/g/drivemad/drivemad.html', i: 'drivemad.png' },
             { n: '2048', u: 'g/2048.html', i: '2048.png' },
@@ -160,19 +142,19 @@
             { n: 'Rolling Forest', u: 'g/rollingforests.html', i: 'rollingforests.png' },
             { n: 'Fluid Simulator', u: 'g/fluidsimulator.html', i: 'fluidsimulator.png' },
             { n: 'Geometry Dash', u: 'g/geometrydash.html', i: 'geometrydash.png' },
-            { n: 'Worldle+', u: 'g/wordle.html', i: 'wordle.png' },
+            { n: 'Wordle+', u: 'g/wordle.html', i: 'wordle.png' },
             { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' },
             { n: 'Raft Wars 1', u: 'g/raftwars.html', i: 'raftwars.png' },
             { n: 'Raft Wars 2', u: 'g/raftwars2.html', i: 'raftwars2.png' }
         ];
 
         const grid = document.getElementById('grid');
-        gamesList.forEach(g => {
-            const d = document.createElement('div');
-            d.className = 'tile';
-            d.innerHTML = `<img src="img/${g.i}" onerror="this.src='img/gams-g.png'"><span>${g.n}</span>`;
-            d.onclick = () => launchGame(g.u);
-            grid.appendChild(d);
+        myGames.forEach(game => {
+            const div = document.createElement('div');
+            div.className = 'tile';
+            div.innerHTML = `<img src="img/${game.i}" onerror="this.src='img/gams-g.png'"><div>${game.n}</div>`;
+            div.onclick = () => launchGame(game.u);
+            grid.appendChild(div);
         });
     </script>
 </body>

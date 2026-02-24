@@ -16,13 +16,27 @@
             font-family: 'Segoe UI', sans-serif; color: #fff;
         }
 
-        /* GESTURE TRIGGER AREA */
+        /* SVG BACKGROUND RENDER FIX */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            background: url('ibg.svg') center/cover no-repeat;
+            z-index: 1;
+        }
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 2;
+        }
+
+        /* GESTURE TRIGGER */
         #pull-trigger {
             position: fixed; top: 0; left: 0; width: 100%; height: 60px;
             z-index: 1000000; background: transparent; touch-action: none;
         }
 
-        /* PULL-DOWN HUD (Pauses Game) */
+        /* HUD MENU */
         #pull-menu {
             position: fixed; top: 0; left: 0; width: 100%;
             background: var(--bg);
@@ -31,13 +45,11 @@
             z-index: 999999;
             transform: translateY(-100%);
             will-change: transform;
-            /* Padding respects the notch/status bar */
             padding: calc(env(safe-area-inset-top) + 20px) 20px 35px;
             display: flex; flex-direction: column; gap: 12px;
             box-shadow: 0 10px 50px rgba(0,0,0,0.9); text-align: center;
         }
 
-        /* RELOAD ICON - TOP RIGHT */
         .menu-reload-btn {
             position: absolute;
             top: calc(env(safe-area-inset-top) + 10px);
@@ -45,22 +57,17 @@
             font-size: 1.8rem; background: none; border: none; color: #fff;
             opacity: 0.7; cursor: pointer; padding: 10px;
         }
-        .menu-reload-btn:active { opacity: 1; transform: rotate(180deg); transition: 0.3s; }
 
         .pull-handle {
             position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
             width: 50px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px;
         }
 
-        /* MESH GRADIENT WALLPAPER (Replaces missing SVG) */
+        /* MAIN UI */
         .mobile-container {
             position: fixed; inset: 0; display: flex; flex-direction: column;
-            background-color: #0c0c0c;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(255,0,0,0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(255,0,0,0.1) 0px, transparent 50%);
             z-index: 10;
-            padding-top: env(safe-area-inset-top); /* Shifts UI below status bar */
+            padding-top: env(safe-area-inset-top);
         }
 
         #game-frame {
@@ -68,37 +75,56 @@
             border: none; background: #000; display: none; z-index: 50;
         }
 
-        .mobile-header { padding: 15px; border-bottom: 3px solid var(--p); flex-shrink: 0; background: rgba(0,0,0,0.4); }
+        .mobile-header { 
+            padding: 15px; 
+            border-bottom: 3px solid var(--p); 
+            flex-shrink: 0; 
+            background: rgba(0,0,0,0.7); 
+        }
         .mobile-header h1 { font-size: 1.4rem; letter-spacing: 2px; text-align: center; font-weight: 900; }
 
-        .mobile-tabs { display: flex; background: rgba(0,0,0,0.6); flex-shrink: 0; }
-        .mobile-tab { flex: 1; padding: 15px; text-align: center; font-weight: 800; font-size: 0.75rem; color: #666; text-transform: uppercase; border-bottom: 3px solid transparent; }
-        .mobile-tab.active { color: #fff; border-bottom-color: var(--p); }
-
         .mobile-search { padding: 12px; flex-shrink: 0; }
-        .mobile-search input { width: 100%; padding: 14px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-size: 16px; }
+        .mobile-search input { 
+            width: 100%; padding: 14px; 
+            background: rgba(255,255,255,0.1); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 12px; color: #fff; font-size: 16px; 
+        }
 
-        .mobile-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        /* SCROLLING GAMES GRID */
+        .mobile-content { 
+            flex: 1; 
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch; 
+            padding-bottom: 50px;
+        }
         .mobile-game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
-        .mobile-tile { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border-radius: 18px; padding: 10px; text-align: center; border: 1.5px solid rgba(255,255,255,0.08); }
-        .mobile-tile img { width: 100%; border-radius: 14px; margin-bottom: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        
+        .mobile-tile { 
+            background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(15px); 
+            border-radius: 18px; padding: 10px; 
+            text-align: center; border: 1.5px solid rgba(255,255,255,0.1); 
+        }
+        .mobile-tile img { width: 100%; border-radius: 14px; margin-bottom: 8px; }
+        .mobile-tile-name { font-size: 0.8rem; font-weight: 700; color: #fff; }
 
         .btn { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 900; text-transform: uppercase; font-size: 0.9rem; }
-        .btn-red { background: var(--p); color: #fff; box-shadow: 0 4px 15px rgba(255,0,0,0.2); }
+        .btn-red { background: var(--p); color: #fff; }
         .btn-dark { background: #1a1a1a; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
-
-        .section { display: none; }
-        .section.active { display: block; }
     </style>
 </head>
 <body>
+
+    <div class="bg-layer"></div>
+    <div class="bg-overlay"></div>
 
     <div id="pull-trigger"></div>
 
     <div id="pull-menu">
         <button class="menu-reload-btn" onclick="location.reload()">↻</button>
-        <h2 style="color:var(--p); margin-bottom: 5px;">PAUSED</h2>
-        <button class="btn btn-red" onclick="leaveGame()">🚪 LEAVE GAME</button>
+        <h2 style="color:var(--p); margin-bottom: 5px;">GAME PAUSED</h2>
+        <button class="btn btn-red" onclick="leaveGame()">🚪 EXIT TO MENU</button>
         <button class="btn btn-dark" onclick="closeMenu()">▶️ RESUME</button>
         <div class="pull-handle"></div>
     </div>
@@ -106,26 +132,16 @@
     <iframe id="game-frame"></iframe>
 
     <div class="mobile-container" id="main-ui">
-        <div class="mobile-header"><h1>GAMS</h1></div>
-        <div class="mobile-tabs">
-            <div class="mobile-tab active" onclick="switchTab('games', this)">GAMES</div>
-            <div class="mobile-tab" onclick="switchTab('eaglercraft', this)">EAGLERCRAFT</div>
+        <div class="mobile-header">
+            <h1>GAMS</h1>
         </div>
         
-        <div class="mobile-search" id="search-container">
+        <div class="mobile-search">
             <input type="text" placeholder="Search games..." oninput="search(this.value)">
         </div>
 
         <div class="mobile-content">
-            <div id="games" class="section active"><div class="mobile-game-grid" id="grid"></div></div>
-            <div id="eaglercraft" class="section">
-                <div style="padding: 30px; text-align: center;">
-                    <div class="mobile-tile" style="padding: 40px;">
-                        <h3 style="margin-bottom:20px">Minecraft 1.8.8</h3>
-                        <button class="btn btn-red" onclick="loadGame('g/aminecraftfolder/javascript_web/index.html')">Launch Game</button>
-                    </div>
-                </div>
-            </div>
+            <div class="mobile-game-grid" id="grid"></div>
         </div>
     </div>
 
@@ -134,6 +150,7 @@
         const trigger = document.getElementById('pull-trigger');
         let startY = 0; let isDragging = false;
 
+        // PULL ANIMATION LOGIC
         trigger.addEventListener('touchstart', e => {
             startY = e.touches[0].clientY; isDragging = true;
             menu.style.transition = 'none';
@@ -152,46 +169,52 @@
             isDragging = false;
             menu.style.transition = 'transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.1)';
             const endY = e.changedTouches[0].clientY;
-            if (endY - startY > 100) { menu.style.transform = 'translateY(0%)'; } 
+            if (endY - startY > 100) { 
+                menu.style.transform = 'translateY(0%)'; 
+                if (navigator.vibrate) navigator.vibrate(10);
+            } 
             else { menu.style.transform = 'translateY(-100%)'; }
         });
 
-        function closeMenu() { menu.style.transition = 'transform 0.3s ease'; menu.style.transform = 'translateY(-100%)'; }
+        function closeMenu() { 
+            menu.style.transition = 'transform 0.3s ease'; 
+            menu.style.transform = 'translateY(-100%)'; 
+        }
 
+        // GAME LOADER
         function loadGame(url) {
             const frame = document.getElementById('game-frame');
-            frame.src = url; frame.style.display = 'block';
+            frame.src = url;
+            frame.style.display = 'block';
             document.getElementById('main-ui').style.display = 'none';
             closeMenu();
         }
 
         function leaveGame() {
             const frame = document.getElementById('game-frame');
-            frame.src = ''; frame.style.display = 'none';
+            frame.src = '';
+            frame.style.display = 'none';
             document.getElementById('main-ui').style.display = 'flex';
             closeMenu();
         }
 
-        function switchTab(id, el) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            el.classList.add('active');
-            document.getElementById('search-container').style.display = (id === 'games') ? 'block' : 'none';
-        }
-
         function search(q) {
             const tiles = document.querySelectorAll('.mobile-tile');
-            tiles.forEach(t => { t.style.display = t.innerText.toLowerCase().includes(q.toLowerCase()) ? '' : 'none'; });
+            tiles.forEach(t => {
+                t.style.display = t.innerText.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+            });
         }
 
+        // GAME LIST
         const gamesList = [
             { n: 'Stickman Hook', u: 'g/stickmanhook.html', i: 'stickmanhook.png' },
             { n: 'Drive Mad', u: 'g/g/drivemad/drivemad.html', i: 'drivemad.png' },
             { n: '2048', u: 'g/2048.html', i: '2048.png' },
             { n: 'Cookie Clicker', u: 'g/g/cookie/index.html', i: 'cookieclicker.png' },
             { n: 'Geometry Dash', u: 'g/geometrydash.html', i: 'geometrydash.png' },
-            { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' }
+            { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' },
+            { n: 'Retro Bowl', u: 'g/retrobowl.html', i: 'retrobowl.png' },
+            { n: 'Bitlife', u: 'g/bitlife.html', i: 'bitlife.png' }
         ];
 
         const grid = document.getElementById('grid');

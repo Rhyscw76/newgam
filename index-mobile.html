@@ -4,168 +4,157 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gams Mobile</title>
-    <link rel="icon" id="tab-icon" href="img/gams-g.png">
     <style>
-        /* THEME SYSTEM */
         :root { 
             --p: #f00; 
-            --bg-menu: rgba(15,15,15,0.98); 
+            --bg-hud: rgba(15,15,15,0.95); 
             --txt: #fff;
-            --tile: rgba(255, 255, 255, 0.05);
-            --brd: rgba(255, 255, 255, 0.1);
+            --card: rgba(255, 255, 255, 0.05);
             --overlay: rgba(0,0,0,0.4);
         }
         
+        /* THE ACTUAL WHITE THEME */
         body.light-mode {
             --p: #007aff;
-            --bg-menu: rgba(245, 245, 247, 0.98);
+            --bg-hud: rgba(255, 255, 255, 0.98);
             --txt: #000;
-            --tile: rgba(0, 0, 0, 0.05);
-            --brd: rgba(0, 0, 0, 0.1);
-            --overlay: rgba(255,255,255,0.8);
+            --card: rgba(0, 0, 0, 0.05);
+            --overlay: rgba(255, 255, 255, 0.7);
         }
 
         * { margin:0; padding:0; box-sizing:border-box; -webkit-user-select:none; user-select:none; }
         
         html, body { 
-            background: #000; height: 100%; width: 100%; 
-            overflow: hidden; overscroll-behavior: none; 
-            font-family: 'Segoe UI', sans-serif; color: var(--txt);
+            background: #000; height: 100vh; width: 100vw; 
+            overflow: hidden; font-family: 'Segoe UI', sans-serif; color: var(--txt);
         }
 
-        /* THE WALLPAPER: Forced rendering of ibg.svg */
-        .ibg-wallpaper {
-            position: fixed;
-            inset: 0;
-            background-image: url('ibg.svg') !important;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            z-index: -2; /* Behind everything */
+        /* IBG.SVG FIX: High Priority Layering */
+        #wallpaper-engine {
+            position: fixed; inset: 0;
+            background: url('ibg.svg') center/cover no-repeat !important;
+            z-index: -2;
         }
-
-        .ibg-overlay {
-            position: fixed;
-            inset: 0;
+        #color-overlay {
+            position: fixed; inset: 0;
             background: var(--overlay);
             z-index: -1;
-            transition: background 0.3s ease;
+            transition: background 0.3s;
         }
 
-        /* UI ELEMENTS */
-        .mobile-container {
-            position: relative; height: 100%; width: 100%;
-            display: flex; flex-direction: column;
-            padding-top: env(safe-area-inset-top);
-            z-index: 10;
-        }
-
+        /* PULL MENU: Fixed Gap & Safe Areas */
         #pull-menu {
             position: fixed; top: 0; left: 0; width: 100%;
-            background: var(--bg-menu);
-            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            background: var(--bg-hud);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border-bottom: 3px solid var(--p);
-            z-index: 999999;
-            transform: translateY(-101%);
-            padding: calc(env(safe-area-inset-top) + 10px) 20px 30px;
-            transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.1);
-            text-align: center;
+            z-index: 10000;
+            transform: translateY(-100%);
+            will-change: transform;
+            /* Padding-top ensures color goes behind the notch/status bar */
+            padding: calc(env(safe-area-inset-top) + 10px) 20px 25px;
+            display: flex; flex-direction: column; gap: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
         }
 
-        /* OTHER STYLES */
-        .mobile-header { padding: 15px; border-bottom: 3px solid var(--p); display: flex; justify-content: space-between; align-items: center; }
-        .mobile-search { padding: 12px; }
-        .mobile-search input { width: 100%; padding: 12px; background: var(--tile); border: 1.5px solid var(--brd); border-radius: 12px; color: var(--txt); }
-        .mobile-game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
-        .mobile-tile { background: var(--tile); border-radius: 18px; padding: 10px; text-align: center; border: 1.5px solid var(--brd); backdrop-filter: blur(10px); }
-        .mobile-tile img { width: 100%; border-radius: 14px; margin-bottom: 8px; }
-        .btn { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 900; text-transform: uppercase; margin-top: 10px; }
+        .reload-icon {
+            position: absolute; top: calc(env(safe-area-inset-top) + 5px); right: 15px;
+            font-size: 1.8rem; background:none; border:none; color: var(--txt);
+        }
+
+        /* UI LAYOUT */
+        .main-wrapper {
+            position: relative; height: 100%; display: flex; flex-direction: column;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .header { 
+            padding: 15px; border-bottom: 2px solid var(--p); 
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .grid { 
+            flex: 1; overflow-y: auto; display: grid; 
+            grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px;
+        }
+
+        .tile { 
+            background: var(--card); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px; padding: 10px; text-align: center;
+            backdrop-filter: blur(5px);
+        }
+        body.light-mode .tile { border: 1px solid rgba(0,0,0,0.1); }
+        .tile img { width: 100%; border-radius: 10px; margin-bottom: 5px; }
+
+        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; text-transform: uppercase; }
         .btn-red { background: var(--p); color: #fff; }
-        .btn-dark { background: #1a1a1a; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
-        body.light-mode .btn-dark { background: #fff; color: #000; border: 1px solid #ccc; }
-        
-        #game-frame { position: fixed; inset: 0; width: 100%; height: 100%; border: none; display: none; z-index: 50; background: #000; }
-        #pull-trigger { position: fixed; top: 0; left: 0; width: 100%; height: 50px; z-index: 1000000; }
+        .btn-theme { background: var(--txt); color: var(--bg-hud); margin-top: 5px; border: 1px solid var(--p); }
+
+        #game-view { position: fixed; inset: 0; width: 100%; height: 100%; border: none; z-index: 5000; display: none; background: #000; }
+        #drag-zone { position: fixed; top: 0; left: 0; width: 100%; height: 40px; z-index: 100000; }
     </style>
 </head>
 <body>
 
-    <div class="ibg-wallpaper"></div>
-    <div class="ibg-overlay"></div>
-
-    <div id="pull-trigger"></div>
+    <div id="wallpaper-engine"></div>
+    <div id="color-overlay"></div>
+    <div id="drag-zone"></div>
 
     <div id="pull-menu">
-        <h2 style="color:var(--p);">PAUSED</h2>
-        <button class="btn btn-red" onclick="leaveGame()">🚪 EXIT GAME</button>
-        <button class="btn btn-dark" onclick="toggleTheme()">🌓 TOGGLE THEME</button>
-        <button class="btn btn-dark" onclick="closeMenu()">▶️ RESUME</button>
+        <button class="reload-icon" onclick="location.reload()">↻</button>
+        <h2 style="color:var(--p); text-align: center;">PAUSED</h2>
+        <button class="btn btn-red" onclick="exitGame()">EXIT TO MENU</button>
+        <button class="btn btn-theme" onclick="swapTheme()">SWITCH THEME</button>
+        <button class="btn" style="background:#444; color:#fff;" onclick="hideMenu()">RESUME</button>
     </div>
 
-    <iframe id="game-frame"></iframe>
+    <iframe id="game-view"></iframe>
 
-    <div class="mobile-container" id="main-ui">
-        <div class="mobile-header">
-            <h1>GAMS</h1>
-            <button class="btn-dark" style="padding: 5px 10px; border-radius: 8px;" onclick="openMenu()">⚙️</button>
+    <div class="main-wrapper" id="ui-screen">
+        <div class="header">
+            <h1 style="letter-spacing: 2px;">GAMS</h1>
+            <button onclick="showMenu()" style="background:none; border:none; font-size:1.5rem;">⚙️</button>
         </div>
-        <div class="mobile-search">
-            <input type="text" placeholder="Search games..." oninput="search(this.value)">
-        </div>
-        <div style="flex:1; overflow-y:auto;">
-            <div class="mobile-game-grid" id="grid"></div>
-        </div>
+        
+        <div class="grid" id="game-grid"></div>
     </div>
 
     <script>
-        // THEME ENGINE
-        function applyTheme(theme) {
-            if (theme === 'light') {
-                document.body.classList.add('light-mode');
-            } else {
-                document.body.classList.remove('light-mode');
-            }
-        }
-
-        function toggleTheme() {
-            const isLight = document.body.classList.toggle('light-mode');
-            localStorage.setItem('gams-theme', isLight ? 'light' : 'dark');
-        }
-
-        // Initialize theme
-        applyTheme(localStorage.getItem('gams-theme'));
-
-        // PULL MENU LOGIC
         const menu = document.getElementById('pull-menu');
-        const trigger = document.getElementById('pull-trigger');
+        const dragZone = document.getElementById('drag-zone');
         let startY = 0;
 
-        trigger.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
-        trigger.addEventListener('touchmove', e => {
-            let moveY = e.touches[0].clientY;
-            if (moveY - startY > 50) openMenu();
+        // THEME STORAGE & LOGIC
+        function swapTheme() {
+            const isLight = document.body.classList.toggle('light-mode');
+            localStorage.setItem('user-theme', isLight ? 'light' : 'dark');
+        }
+
+        if(localStorage.getItem('user-theme') === 'light') document.body.classList.add('light-mode');
+
+        // GESTURE
+        dragZone.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
+        dragZone.addEventListener('touchmove', e => {
+            let dist = e.touches[0].clientY - startY;
+            if(dist > 30) showMenu();
         });
 
-        function openMenu() { menu.style.transform = 'translateY(0%)'; }
-        function closeMenu() { menu.style.transform = 'translateY(-101%)'; }
+        function showMenu() { menu.style.transform = 'translateY(0)'; }
+        function hideMenu() { menu.style.transform = 'translateY(-100%)'; }
 
-        function loadGame(url) {
-            document.getElementById('game-frame').src = url;
-            document.getElementById('game-frame').style.display = 'block';
-            document.getElementById('main-ui').style.display = 'none';
-            closeMenu();
+        function launchGame(url) {
+            const g = document.getElementById('game-view');
+            g.src = url; g.style.display = 'block';
+            document.getElementById('ui-screen').style.display = 'none';
+            hideMenu();
         }
 
-        function leaveGame() {
-            document.getElementById('game-frame').src = '';
-            document.getElementById('game-frame').style.display = 'none';
-            document.getElementById('main-ui').style.display = 'flex';
-            closeMenu();
-        }
-
-        function search(q) {
-            const tiles = document.querySelectorAll('.mobile-tile');
-            tiles.forEach(t => { t.style.display = t.innerText.toLowerCase().includes(q.toLowerCase()) ? '' : 'none'; });
+        function exitGame() {
+            const g = document.getElementById('game-view');
+            g.src = ''; g.style.display = 'none';
+            document.getElementById('ui-screen').style.display = 'flex';
+            hideMenu();
         }
 
         const games = [
@@ -177,12 +166,12 @@
             { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' }
         ];
 
-        const grid = document.getElementById('grid');
-        games.forEach(g => {
+        const grid = document.getElementById('game-grid');
+        games.forEach(game => {
             const div = document.createElement('div');
-            div.className = 'mobile-tile';
-            div.innerHTML = `<img src="img/${g.i}" onerror="this.src='img/gams-g.png'"><div>${g.n}</div>`;
-            div.onclick = () => loadGame(g.u);
+            div.className = 'tile';
+            div.innerHTML = `<img src="img/${game.i}" onerror="this.src='img/gams-g.png'"><div>${game.n}</div>`;
+            div.onclick = () => launchGame(game.u);
             grid.appendChild(div);
         });
     </script>

@@ -5,174 +5,202 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gams Mobile</title>
     <style>
+        /* THEME VARIABLES */
         :root { 
             --p: #f00; 
-            --bg-hud: rgba(15,15,15,0.95); 
-            --txt: #fff;
-            --card: rgba(255, 255, 255, 0.05);
-            --overlay: rgba(0,0,0,0.4);
+            --bg-hud: rgba(20, 20, 20, 0.95); 
+            --txt: #ffffff;
+            --tile-bg: rgba(255, 255, 255, 0.08);
+            --tile-brd: rgba(255, 255, 255, 0.15);
+            --overlay-color: rgba(0, 0, 0, 0.4);
+            --ui-bg: transparent; /* Essential for SVG visibility */
         }
         
-        /* THE ACTUAL WHITE THEME */
+        /* TRUE WHITE MODE */
         body.light-mode {
-            --p: #007aff;
+            --p: #f00; 
             --bg-hud: rgba(255, 255, 255, 0.98);
-            --txt: #000;
-            --card: rgba(0, 0, 0, 0.05);
-            --overlay: rgba(255, 255, 255, 0.7);
+            --txt: #111111;
+            --tile-bg: rgba(0, 0, 0, 0.05);
+            --tile-brd: rgba(0, 0, 0, 0.1);
+            --overlay-color: rgba(255, 255, 255, 0.85); /* Makes background look white while keeping SVG visible */
+            --ui-bg: #ffffff;
         }
 
         * { margin:0; padding:0; box-sizing:border-box; -webkit-user-select:none; user-select:none; }
         
         html, body { 
-            background: #000; height: 100vh; width: 100vw; 
-            overflow: hidden; font-family: 'Segoe UI', sans-serif; color: var(--txt);
+            height: 100%; width: 100%; 
+            overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            color: var(--txt);
+            background-color: #000; /* Fallback */
         }
 
-        /* IBG.SVG FIX: High Priority Layering */
-        #wallpaper-engine {
-            position: fixed; inset: 0;
-            background: url('ibg.svg') center/cover no-repeat !important;
+        /* FIXED WALLPAPER RENDER - Layer -2 */
+        .wallpaper-container {
+            position: fixed;
+            inset: 0;
+            background-image: url('ibg.svg') !important;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             z-index: -2;
         }
-        #color-overlay {
-            position: fixed; inset: 0;
-            background: var(--overlay);
+
+        /* DYNAMIC OVERLAY - Layer -1 */
+        .theme-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--overlay-color);
             z-index: -1;
-            transition: background 0.3s;
+            transition: background 0.3s ease;
         }
 
-        /* PULL MENU: Fixed Gap & Safe Areas */
+        /* PULL-DOWN MENU (Flush with top) */
         #pull-menu {
             position: fixed; top: 0; left: 0; width: 100%;
             background: var(--bg-hud);
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-bottom: 3px solid var(--p);
             z-index: 10000;
-            transform: translateY(-100%);
+            transform: translateY(-101%);
             will-change: transform;
-            /* Padding-top ensures color goes behind the notch/status bar */
-            padding: calc(env(safe-area-inset-top) + 10px) 20px 25px;
-            display: flex; flex-direction: column; gap: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            padding: calc(env(safe-area-inset-top) + 15px) 20px 30px;
+            transition: transform 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
+            text-align: center;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
         }
 
-        .reload-icon {
-            position: absolute; top: calc(env(safe-area-inset-top) + 5px); right: 15px;
-            font-size: 1.8rem; background:none; border:none; color: var(--txt);
-        }
-
-        /* UI LAYOUT */
-        .main-wrapper {
-            position: relative; height: 100%; display: flex; flex-direction: column;
+        /* MAIN UI */
+        .app-container {
+            position: relative; height: 100%; width: 100%;
+            display: flex; flex-direction: column;
             padding-top: env(safe-area-inset-top);
+            background: transparent;
         }
 
         .header { 
-            padding: 15px; border-bottom: 2px solid var(--p); 
+            padding: 15px 20px; 
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(0,0,0,0.1);
+            border-bottom: 2px solid var(--p);
+            background: rgba(0,0,0,0.05);
         }
 
-        .grid { 
-            flex: 1; overflow-y: auto; display: grid; 
-            grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px;
+        .scroll-area {
+            flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+            padding: 15px;
         }
 
+        .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        /* TILES */
         .tile { 
-            background: var(--card); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px; padding: 10px; text-align: center;
-            backdrop-filter: blur(5px);
+            background: var(--tile-bg); 
+            border: 1px solid var(--tile-brd);
+            border-radius: 20px; padding: 12px; text-align: center;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
-        body.light-mode .tile { border: 1px solid rgba(0,0,0,0.1); }
-        .tile img { width: 100%; border-radius: 10px; margin-bottom: 5px; }
+        .tile img { width: 100%; border-radius: 15px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .tile span { font-weight: 700; font-size: 0.9rem; }
 
-        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; text-transform: uppercase; }
+        /* BUTTONS */
+        .btn { 
+            width: 100%; padding: 16px; border-radius: 15px; border: none; 
+            font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            margin-top: 10px;
+        }
         .btn-red { background: var(--p); color: #fff; }
-        .btn-theme { background: var(--txt); color: var(--bg-hud); margin-top: 5px; border: 1px solid var(--p); }
+        .btn-outline { background: transparent; color: var(--txt); border: 2px solid var(--p); }
 
-        #game-view { position: fixed; inset: 0; width: 100%; height: 100%; border: none; z-index: 5000; display: none; background: #000; }
-        #drag-zone { position: fixed; top: 0; left: 0; width: 100%; height: 40px; z-index: 100000; }
+        #game-frame { position: fixed; inset: 0; width: 100%; height: 100%; border: none; z-index: 5000; display: none; background: #000; }
+        #pull-zone { position: fixed; top: 0; left: 0; width: 100%; height: 50px; z-index: 100000; }
     </style>
 </head>
 <body>
 
-    <div id="wallpaper-engine"></div>
-    <div id="color-overlay"></div>
-    <div id="drag-zone"></div>
+    <div class="wallpaper-container"></div>
+    <div class="theme-overlay"></div>
+
+    <div id="pull-zone"></div>
 
     <div id="pull-menu">
-        <button class="reload-icon" onclick="location.reload()">↻</button>
-        <h2 style="color:var(--p); text-align: center;">PAUSED</h2>
-        <button class="btn btn-red" onclick="exitGame()">EXIT TO MENU</button>
-        <button class="btn btn-theme" onclick="swapTheme()">SWITCH THEME</button>
-        <button class="btn" style="background:#444; color:#fff;" onclick="hideMenu()">RESUME</button>
+        <h2 style="color:var(--p); margin-bottom: 15px;">GAME PAUSED</h2>
+        <button class="btn btn-red" onclick="exitGame()">🚪 EXIT TO MENU</button>
+        <button class="btn btn-outline" onclick="toggleTheme()">🌓 TOGGLE THEME</button>
+        <button class="btn" style="background:#888; color:#fff;" onclick="closeMenu()">▶️ RESUME</button>
     </div>
 
-    <iframe id="game-view"></iframe>
+    <iframe id="game-frame"></iframe>
 
-    <div class="main-wrapper" id="ui-screen">
+    <div class="app-container" id="ui-main">
         <div class="header">
-            <h1 style="letter-spacing: 2px;">GAMS</h1>
-            <button onclick="showMenu()" style="background:none; border:none; font-size:1.5rem;">⚙️</button>
+            <h1 style="font-weight: 900; letter-spacing: 3px;">GAMS</h1>
+            <button onclick="openMenu()" style="background:none; border:none; font-size:1.6rem; color:var(--txt);">⚙️</button>
         </div>
-        
-        <div class="grid" id="game-grid"></div>
+
+        <div class="scroll-area">
+            <div class="game-grid" id="grid"></div>
+        </div>
     </div>
 
     <script>
         const menu = document.getElementById('pull-menu');
-        const dragZone = document.getElementById('drag-zone');
+        const pullZone = document.getElementById('pull-zone');
         let startY = 0;
 
-        // THEME STORAGE & LOGIC
-        function swapTheme() {
+        // THEME LOGIC
+        function toggleTheme() {
             const isLight = document.body.classList.toggle('light-mode');
-            localStorage.setItem('user-theme', isLight ? 'light' : 'dark');
+            localStorage.setItem('gams_pref_theme', isLight ? 'light' : 'dark');
         }
 
-        if(localStorage.getItem('user-theme') === 'light') document.body.classList.add('light-mode');
+        // AUTO-LOAD PREFERENCE
+        if (localStorage.getItem('gams_pref_theme') === 'light') {
+            document.body.classList.add('light-mode');
+        }
 
-        // GESTURE
-        dragZone.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
-        dragZone.addEventListener('touchmove', e => {
-            let dist = e.touches[0].clientY - startY;
-            if(dist > 30) showMenu();
+        // PULL GESTURE
+        pullZone.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
+        pullZone.addEventListener('touchmove', e => {
+            if (e.touches[0].clientY - startY > 40) openMenu();
         });
 
-        function showMenu() { menu.style.transform = 'translateY(0)'; }
-        function hideMenu() { menu.style.transform = 'translateY(-100%)'; }
+        function openMenu() { menu.style.transform = 'translateY(0)'; }
+        function closeMenu() { menu.style.transform = 'translateY(-101%)'; }
 
         function launchGame(url) {
-            const g = document.getElementById('game-view');
-            g.src = url; g.style.display = 'block';
-            document.getElementById('ui-screen').style.display = 'none';
-            hideMenu();
+            const f = document.getElementById('game-frame');
+            f.src = url; f.style.display = 'block';
+            document.getElementById('ui-main').style.display = 'none';
+            closeMenu();
         }
 
         function exitGame() {
-            const g = document.getElementById('game-view');
-            g.src = ''; g.style.display = 'none';
-            document.getElementById('ui-screen').style.display = 'flex';
-            hideMenu();
+            const f = document.getElementById('game-frame');
+            f.src = ''; f.style.display = 'none';
+            document.getElementById('ui-main').style.display = 'flex';
+            closeMenu();
         }
 
-        const games = [
+        // DATA
+        const gamesList = [
             { n: 'Stickman Hook', u: 'g/stickmanhook.html', i: 'stickmanhook.png' },
             { n: 'Drive Mad', u: 'g/g/drivemad/drivemad.html', i: 'drivemad.png' },
             { n: '2048', u: 'g/2048.html', i: '2048.png' },
             { n: 'Cookie Clicker', u: 'g/g/cookie/index.html', i: 'cookieclicker.png' },
             { n: 'Geometry Dash', u: 'g/geometrydash.html', i: 'geometrydash.png' },
-            { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' }
+            { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' },
+            { n: 'Wordle+', u: 'g/wordle.html', i: 'wordle.png' },
+            { n: 'Raft Wars', u: 'g/raftwars.html', i: 'raftwars.png' }
         ];
 
-        const grid = document.getElementById('game-grid');
-        games.forEach(game => {
-            const div = document.createElement('div');
-            div.className = 'tile';
-            div.innerHTML = `<img src="img/${game.i}" onerror="this.src='img/gams-g.png'"><div>${game.n}</div>`;
-            div.onclick = () => launchGame(game.u);
-            grid.appendChild(div);
+        const grid = document.getElementById('grid');
+        gamesList.forEach(g => {
+            const d = document.createElement('div');
+            d.className = 'tile';
+            d.innerHTML = `<img src="img/${g.i}" onerror="this.src='img/gams-g.png'"><span>${g.n}</span>`;
+            d.onclick = () => launchGame(g.u);
+            grid.appendChild(d);
         });
     </script>
 </body>

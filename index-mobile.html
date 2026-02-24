@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Gams Mobile</title>
+    <link rel="icon" id="tab-icon" href="img/gams-g.png">
+    <style>
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        :root { --p: #f00; --g: rgba(15,15,15,.95); --b: rgba(255,255,255,.12); --glow: 0 0 25px rgba(255,0,0,.4); }
+        * { margin:0; padding:0; box-sizing:border-box; outline:0; -webkit-user-select:none; user-select:none; scrollbar-width:none; }
+        ::-webkit-scrollbar { display:none; }
+        html, body { color:#fff; font-family:'Segoe UI',sans-serif; background:#000; height:100%; width:100%; overflow:hidden; }
+        
+        .mobile-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            /* Added your SVG background here */
+            background: url('ibg.svg') center/cover no-repeat, linear-gradient(135deg, #141414 0%, #1e0a0a 100%);
+            overflow: hidden;
+            z-index: 100000;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .mobile-header {
+            padding: 14px 16px;
+            background: linear-gradient(180deg, rgba(0,0,0,.9) 0%, rgba(0,0,0,.7) 100%);
+            border-bottom: 3px solid var(--p);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(255,0,0,.2);
+        }
+
+        .mobile-header h1 {
+            font-size: 1.3rem;
+            font-weight: 900;
+            margin: 0;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255,0,0,.5);
+        }
+
+        .mobile-header-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .mobile-btn-small {
+            padding: 8px 14px;
+            background: linear-gradient(135deg, rgba(255,0,0,.3) 0%, rgba(255,0,0,.1) 100%);
+            border: 1.5px solid var(--p);
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.65rem;
+            transition: all .3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .mobile-btn-small:active { transform: scale(0.92); }
+
+        .mobile-tabs {
+            display: flex;
+            background: rgba(0,0,0,.5);
+            border-bottom: 1px solid var(--b);
+            flex-shrink: 0;
+        }
+
+        .mobile-tab {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: rgba(255,255,255,.7);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .mobile-tab.active {
+            color: #fff;
+            border-bottom-color: var(--p);
+            text-shadow: 0 0 8px rgba(255,0,0,.6);
+        }
+
+        .mobile-content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mobile-section {
+            display: none;
+            flex-direction: column;
+            min-height: 100%;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .mobile-section.active { display: flex !important; }
+
+        .mobile-game-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 14px;
+        }
+
+        .mobile-tile {
+            background: rgba(30, 30, 30, 0.85);
+            backdrop-filter: blur(5px);
+            border: 1.5px solid var(--b);
+            border-radius: 14px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mobile-tile:active {
+            transform: scale(0.95);
+            border-color: var(--p);
+        }
+
+        .mobile-tile img {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        .mobile-tile-name {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .mobile-search {
+            padding: 12px;
+            background: rgba(0,0,0,.3);
+            border-bottom: 1px solid var(--b);
+        }
+
+        .mobile-search input {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255,255,255,.08);
+            border: 1.5px solid var(--b);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .mobile-eaglercraft-section {
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .mobile-eaglercraft-box {
+            text-align: center;
+            padding: 30px;
+            background: rgba(40, 20, 20, 0.9);
+            border: 1.5px solid var(--p);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .mobile-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.9);
+            z-index: 50000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            backdrop-filter: blur(8px);
+        }
+
+        .mobile-modal.active { display: flex; }
+
+        .mobile-modal-content {
+            background: linear-gradient(135deg, #1e1e1e 0%, #141414 100%);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1.5px solid var(--p);
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255,0,0,0.2);
+        }
+
+        .mobile-modal-btn {
+            padding: 12px;
+            background: rgba(255,255,255,.1);
+            border: 1px solid var(--b);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .confirm-btn {
+            background: linear-gradient(135deg, #f00, #900);
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        <div class="mobile-header">
+            <h1>GAMS</h1>
+            <div class="mobile-header-buttons">
+                <button class="mobile-btn-small" onclick="mobileTglModal('pc-confirm-modal')">💻 PC</button>
+                <button class="mobile-btn-small" onclick="mobileTglModal('cloak-modal-m')">🔒 CLOAK</button>
+                <button class="mobile-btn-small" onclick="mobileTglModal('settings-modal-m')">⚙️</button>
+            </div>
+        </div>
+
+        <div class="mobile-tabs">
+            <button class="mobile-tab active" onclick="mobileChangeTab('games', this)">GAMES</button>
+            <button class="mobile-tab" onclick="mobileChangeTab('eaglercraft', this)">EAGLERCRAFT</button>
+        </div>
+
+        <div class="mobile-search" id="search-container">
+            <input type="text" id="mobile-search" placeholder="Search games..." oninput="mobileDoSearch()">
+        </div>
+
+        <div class="mobile-content">
+            <div id="mobile-games-section" class="mobile-section active">
+                <div id="mobile-game-grid" class="mobile-game-grid"></div>
+            </div>
+
+            <div id="mobile-eaglercraft-section" class="mobile-section mobile-eaglercraft-section">
+                <div class="mobile-eaglercraft-box">
+                    <p style="margin-bottom: 16px; font-size: 2rem;">🎮</p>
+                    <p style="font-size: 1.1rem; font-weight: 900; text-transform: uppercase;">Eaglercraft</p>
+                    <p style="margin-bottom: 20px; font-size: 0.85rem; opacity: 0.8;">Minecraft Java Browser Edition</p>
+                    <button class="mobile-modal-btn confirm-btn" onclick="mobileLoadEaglercraft()">▶️ LAUNCH GAME</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pc-confirm-modal" class="mobile-modal">
+        <div class="mobile-modal-content">
+            <h2 style="color:var(--p); margin-bottom:10px;">SWITCH TO PC?</h2>
+            <p style="font-size: 0.85rem; opacity: 0.8; margin-bottom: 20px;">The desktop version may not be optimized for your mobile screen.</p>
+            <button class="mobile-modal-btn confirm-btn" onclick="window.location.href='index-desktop.html'">OPEN PC VERSION</button>
+            <button class="mobile-modal-btn" onclick="mobileTglModal('pc-confirm-modal')">STAY ON MOBILE</button>
+        </div>
+    </div>
+
+    <div id="cloak-modal-m" class="mobile-modal" onclick="if(event.target===this)mobileTglModal('cloak-modal-m')">
+        <div class="mobile-modal-content">
+            <h2 style="margin-bottom:15px">TAB CLOAK</h2>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button class="mobile-modal-btn" onclick="setCloak('Google','https://google.com/favicon.ico')">Google</button>
+                <button class="mobile-modal-btn" onclick="setCloak('Home','https://ssl.gstatic.com/classroom/favicon.png')">Classroom</button>
+                <button class="mobile-modal-btn" onclick="setCloak('My Drive','https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png')">Drive</button>
+                <button class="mobile-modal-btn" onclick="setCloak('Gams','img/gams-g.png')">Reset</button>
+            </div>
+            <button class="mobile-modal-btn" style="margin-top:15px" onclick="mobileTglModal('cloak-modal-m')">CLOSE</button>
+        </div>
+    </div>
+
+    <div id="settings-modal-m" class="mobile-modal" onclick="if(event.target===this)mobileTglModal('settings-modal-m')">
+        <div class="mobile-modal-content">
+            <h2 style="margin-bottom:15px">SETTINGS</h2>
+            <button class="mobile-modal-btn" onclick="mobileChangeWallpaper()">🖼️ RANDOM BACKGROUND</button>
+            <button class="mobile-modal-btn" onclick="mobileTglModal('settings-modal-m')">CLOSE</button>
+        </div>
+    </div>
+
+    <script>
+        function initMobileVersion() {
+            const games = [
+                { name: 'Stickman Hook', url: 'g/stickmanhook.html', img: 'stickmanhook.png' },
+                { name: 'Drive Mad', url: 'g/g/drivemad/drivemad.html', img: 'drivemad.png' },
+                { name: '2048', url: 'g/2048.html', img: '2048.png' },
+                { name: 'Cookie Clicker', url: 'g/g/cookie/index.html', img: 'cookieclicker.png' },
+                { name: 'Its Raining Boxes', url: 'g/itsrainingboxes.html', img: 'itsrainingboxes.png' },
+                { name: 'Stack', url: 'g/stack.html', img: 'stack.png' },
+                { name: 'Rolling Forests', url: 'g/rollingforests.html', img: 'rollingforests.png' },
+                { name: 'Fluid Simulator', url: 'g/fluidsimulator.html', img: 'fluidsimulator.png' },
+                { name: 'Geometry Dash', url: 'g/geometrydash.html', img: 'geometrydash.png' },
+                { name: 'Wordle', url: 'g/wordle.html', img: 'wordle.png' },
+                { name: 'Paper IO 2', url: 'g/paperio2.html', img: 'paperio2.png' },
+                { name: 'Raft Wars', url: 'g/raftwars.html', img: 'raftwars.png' }
+            ];
+
+            const grid = document.getElementById('mobile-game-grid');
+            grid.innerHTML = ''; 
+            games.forEach((game, idx) => {
+                const tile = document.createElement('div');
+                tile.className = 'mobile-tile';
+                tile.style.animationDelay = `${idx * 50}ms`;
+                
+                const img = document.createElement('img');
+                img.src = `img/${game.img}`;
+                img.onerror = function() {
+                    const firstLetter = game.name.charAt(0).toUpperCase();
+                    this.parentElement.innerHTML = `<div style="width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:900;background:rgba(255,0,0,0.2);border-radius:10px;margin-bottom:10px;color:#f00;">${firstLetter}</div><div class="mobile-tile-name">${game.name}</div>`;
+                };
+                
+                tile.appendChild(img);
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'mobile-tile-name';
+                nameDiv.textContent = game.name;
+                tile.appendChild(nameDiv);
+                
+                tile.onclick = () => { window.location.href = game.url; };
+                grid.appendChild(tile);
+            });
+        }
+
+        function mobileChangeTab(tab, btn) {
+            document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.mobile-section').forEach(s => s.classList.remove('active'));
+            
+            btn.classList.add('active');
+            document.getElementById(`mobile-${tab}-section`).classList.add('active');
+            document.getElementById('search-container').style.display = (tab === 'eaglercraft') ? 'none' : 'block';
+        }
+
+        function mobileDoSearch() {
+            const q = document.getElementById('mobile-search').value.toLowerCase();
+            document.querySelectorAll('.mobile-tile').forEach(tile => {
+                const name = tile.querySelector('.mobile-tile-name').textContent.toLowerCase();
+                tile.style.display = name.includes(q) ? '' : 'none';
+            });
+        }
+
+        function mobileLoadEaglercraft() {
+            window.location.href = 'g/aminecraftfolder/wasm_gc_jspi_offline/eaglercraft_wasm_gc_jspi_offline.html';
+        }
+
+        function mobileTglModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.toggle('active');
+        }
+
+        function setCloak(t, f) { 
+            document.title = t; 
+            document.getElementById('tab-icon').href = f;
+            mobileTglModal('cloak-modal-m');
+        }
+
+        function mobileChangeWallpaper() {
+            const colors = ['rgba(30,10,10,1)', 'rgba(10,10,30,1)', 'rgba(10,30,10,1)', 'rgba(20,20,20,1)'];
+            const rand = colors[Math.floor(Math.random()*colors.length)];
+            document.querySelector('.mobile-container').style.background = `url('ibg.svg') center/cover no-repeat, ${rand}`;
+            mobileTglModal('settings-modal-m');
+        }
+
+        window.addEventListener('DOMContentLoaded', initMobileVersion);
+    </script>
+</body>
+</html>

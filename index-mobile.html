@@ -5,18 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gams Mobile</title>
     <style>
-        /* SIMPLEST BACKGROUND METHOD */
+        /* 1. FORCE SVG VISIBILITY */
+        html {
+            background: #000 url('ibg.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
         body {
             margin: 0;
             padding: 0;
-            background-color: #000;
-            background-image: url('ibg.svg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
             font-family: sans-serif;
             color: #fff;
+            background: transparent; /* Must be transparent to see the HTML background */
             height: 100vh;
             width: 100vw;
             overflow: hidden;
@@ -24,44 +24,39 @@
 
         * { box-sizing: border-box; -webkit-user-select: none; user-select: none; }
 
-        /* SEMI-TRANSPARENT OVERLAY TO ENSURE TEXT IS READABLE */
-        .main-tint {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 1;
-        }
-
-        /* PULL MENU */
+        /* 2. MENU FIX (NO GAP) */
         #pull-menu {
             position: fixed; top: 0; left: 0; width: 100%;
-            background: #111;
+            background: rgba(15, 15, 15, 0.98);
             border-bottom: 3px solid #f00;
             z-index: 10000;
-            transform: translateY(-100%);
+            transform: translateY(-101%);
             padding: calc(env(safe-area-inset-top) + 15px) 20px 30px;
-            transition: transform 0.3s ease-out;
+            transition: transform 0.3s ease;
             text-align: center;
         }
 
-        /* UI CONTENT */
-        .app-ui {
+        /* 3. LAYOUT */
+        .ui-layer {
             position: relative;
             z-index: 10;
             height: 100%;
             display: flex;
             flex-direction: column;
             padding-top: env(safe-area-inset-top);
+            background: rgba(0, 0, 0, 0.4); /* Subtle tint so text is readable */
         }
 
         .header { 
             padding: 15px; 
             border-bottom: 3px solid #f00;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.7);
             text-align: center;
+            font-weight: 900;
+            letter-spacing: 3px;
         }
 
-        .scroll-grid {
+        .grid {
             flex: 1;
             overflow-y: auto;
             display: grid;
@@ -72,67 +67,65 @@
         }
 
         .tile {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
             border-radius: 15px;
             padding: 10px;
             text-align: center;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
         }
         .tile img { width: 100%; border-radius: 10px; margin-bottom: 5px; }
 
-        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; margin-top: 10px; text-transform: uppercase; }
+        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; margin-top: 10px; text-transform: uppercase; }
         .btn-red { background: #f00; color: #fff; }
 
         #game-frame { position: fixed; inset: 0; width: 100%; height: 100%; border: none; z-index: 5000; display: none; background: #000; }
-        #pull-hitbox { position: fixed; top: 0; left: 0; width: 100%; height: 40px; z-index: 100000; }
+        #pull-zone { position: fixed; top: 0; left: 0; width: 100%; height: 50px; z-index: 100000; }
     </style>
 </head>
 <body>
 
-    <div class="main-tint"></div>
-
-    <div id="pull-hitbox" onclick="showMenu()"></div>
+    <div id="pull-zone" onclick="toggleMenu()"></div>
 
     <div id="pull-menu">
         <h2 style="color:#f00; margin-bottom: 10px;">PAUSED</h2>
         <button class="btn btn-red" onclick="exitGame()">EXIT TO MENU</button>
-        <button class="btn" style="background:#333; color:#fff;" onclick="hideMenu()">RESUME</button>
+        <button class="btn" style="background:#444; color:#fff;" onclick="toggleMenu()">RESUME</button>
     </div>
 
     <iframe id="game-frame"></iframe>
 
-    <div class="app-ui" id="main-content">
-        <div class="header">
-            <h1 style="letter-spacing: 3px;">GAMS</h1>
-        </div>
-        <div class="scroll-grid" id="grid"></div>
+    <div class="ui-layer" id="main-ui">
+        <div class="header"><h1>GAMS</h1></div>
+        <div class="grid" id="grid"></div>
     </div>
 
     <script>
-        const menu = document.getElementById('pull-menu');
-        
-        function showMenu() { menu.style.transform = 'translateY(0)'; }
-        function hideMenu() { menu.style.transform = 'translateY(-100%)'; }
+        // MENU TOGGLE
+        function toggleMenu() {
+            const m = document.getElementById('pull-menu');
+            const isOpen = m.style.transform === 'translateY(0%)';
+            m.style.transform = isOpen ? 'translateY(-101%)' : 'translateY(0%)';
+        }
 
         function launchGame(url) {
             const frame = document.getElementById('game-frame');
             frame.src = url;
             frame.style.display = 'block';
-            document.getElementById('main-content').style.display = 'none';
-            hideMenu();
+            document.getElementById('main-ui').style.display = 'none';
+            document.getElementById('pull-menu').style.transform = 'translateY(-101%)';
         }
 
         function exitGame() {
             const frame = document.getElementById('game-frame');
             frame.src = '';
             frame.style.display = 'none';
-            document.getElementById('main-content').style.display = 'flex';
-            hideMenu();
+            document.getElementById('main-ui').style.display = 'flex';
+            document.getElementById('pull-menu').style.transform = 'translateY(-101%)';
         }
 
         // VERIFIED WORKING GAMES ONLY
-        const myGames = [
+        const games = [
             { n: 'Stickman Hook', u: 'g/stickmanhook.html', i: 'stickmanhook.png' },
             { n: 'Drive Mad', u: 'g/g/drivemad/drivemad.html', i: 'drivemad.png' },
             { n: '2048', u: 'g/2048.html', i: '2048.png' },
@@ -142,18 +135,18 @@
             { n: 'Rolling Forest', u: 'g/rollingforests.html', i: 'rollingforests.png' },
             { n: 'Fluid Simulator', u: 'g/fluidsimulator.html', i: 'fluidsimulator.png' },
             { n: 'Geometry Dash', u: 'g/geometrydash.html', i: 'geometrydash.png' },
-            { n: 'Wordle+', u: 'g/wordle.html', i: 'wordle.png' },
+            { n: 'Worldle+', u: 'g/wordle.html', i: 'wordle.png' },
             { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' },
             { n: 'Raft Wars 1', u: 'g/raftwars.html', i: 'raftwars.png' },
             { n: 'Raft Wars 2', u: 'g/raftwars2.html', i: 'raftwars2.png' }
         ];
 
         const grid = document.getElementById('grid');
-        myGames.forEach(game => {
+        games.forEach(g => {
             const div = document.createElement('div');
             div.className = 'tile';
-            div.innerHTML = `<img src="img/${game.i}" onerror="this.src='img/gams-g.png'"><div>${game.n}</div>`;
-            div.onclick = () => launchGame(game.u);
+            div.innerHTML = `<img src="img/${g.i}" onerror="this.src='img/gams-g.png'"><div>${g.n}</div>`;
+            div.onclick = () => launchGame(g.u);
             grid.appendChild(div);
         });
     </script>

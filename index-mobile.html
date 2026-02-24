@@ -8,25 +8,66 @@
     <style>
         @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes menuDrop { from { transform: translateY(-100%); } to { transform: translateY(0); } }
 
         :root { --p: #f00; --g: rgba(15,15,15,.8); --b: rgba(255,255,255,0.2); }
         
-        /* FIX: Prevent page dragging/bouncing */
         * { 
             margin:0; padding:0; box-sizing:border-box; outline:0; 
             -webkit-user-select:none; user-select:none; 
             scrollbar-width:none;
-            touch-action: pan-x pan-y; /* Restricted to prevent accidental browser scaling */
+            touch-action: pan-x pan-y;
         }
         ::-webkit-scrollbar { display:none; }
         
         html, body { 
             color:#fff; font-family:'Segoe UI',sans-serif; background:#000; 
             height:100%; width:100%; overflow:hidden; 
-            overscroll-behavior-y: none; /* FIX: Prevents the "pull down to refresh" or bounce gap */
+            overscroll-behavior-y: none;
         }
         
+        /* IN-GAME MENU STYLES */
+        .pull-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(25px);
+            border-bottom: 3px solid var(--p);
+            z-index: 1000000;
+            transform: translateY(-100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 30px 20px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.8);
+            text-align: center;
+        }
+        .pull-menu.active { transform: translateY(0); }
+        
+        /* The "Invisible" trigger area at the top */
+        .pull-trigger {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            z-index: 999999;
+            background: transparent;
+        }
+
+        .pull-handle {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+
         .mobile-container {
             position: fixed;
             top: 0;
@@ -40,34 +81,16 @@
             z-index: 10;
         }
 
-        /* PULL MENU STYLES */
-        .pull-menu {
+        /* Iframe styling for the "In-game" feel */
+        #game-frame {
+            display: none;
             position: fixed;
-            top: 0;
-            left: 0;
+            inset: 0;
             width: 100%;
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 2px solid var(--p);
-            z-index: 100000;
-            transform: translateY(-100%);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .pull-menu.active { transform: translateY(0); }
-        .pull-handle {
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 5px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 10px;
+            height: 100%;
+            border: none;
+            z-index: 50;
+            background: #000;
         }
 
         .mobile-header {
@@ -81,12 +104,11 @@
             flex-shrink: 0;
         }
 
-        .mobile-header h1 { font-size: 1.3rem; font-weight: 900; letter-spacing: 2px; color: #fff; }
+        .mobile-header h1 { font-size: 1.3rem; font-weight: 900; letter-spacing: 2px; }
 
         .mobile-tabs {
             display: flex;
             background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(5px);
             border-bottom: 1px solid var(--b);
             flex-shrink: 0;
         }
@@ -105,21 +127,11 @@
 
         .mobile-tab.active { color: #fff; border-bottom-color: var(--p); }
 
-        .mobile-content {
-            flex: 1;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
+        .mobile-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .mobile-section { display: none; min-height: 100%; animation: slideIn 0.3s ease-out; }
         .mobile-section.active { display: flex !important; flex-direction: column; }
 
-        .mobile-game-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 14px;
-        }
+        .mobile-game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 14px; }
 
         .mobile-tile {
             background: rgba(20, 20, 20, 0.3); 
@@ -140,59 +152,43 @@
             border: 1px solid var(--b);
             border-radius: 12px;
             color: #fff;
-            font-size: 16px; /* Prevents auto-zoom */
+            font-size: 16px;
         }
 
-        /* MODALS */
-        .mobile-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            z-index: 500001;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            backdrop-filter: blur(12px);
-        }
-        .mobile-modal.active { display: flex; }
-        .mobile-modal-content {
-            background: #111;
-            padding: 25px;
-            border-radius: 20px;
-            border: 1.5px solid var(--p);
-            width: 100%;
-            max-width: 320px;
-            text-align: center;
-        }
         .modal-btn {
             width: 100%;
-            padding: 14px;
-            margin-top: 10px;
-            border-radius: 12px;
+            padding: 16px;
+            border-radius: 14px;
             border: none;
             font-weight: 900;
             text-transform: uppercase;
+            font-size: 0.9rem;
         }
-        .btn-red { background: var(--p); color: #fff; }
+        .btn-red { background: var(--p); color: #fff; box-shadow: 0 4px 15px rgba(255,0,0,0.3); }
         .btn-dark { background: #222; color: #fff; }
     </style>
 </head>
 <body onload="initMobileVersion()">
 
+    <div class="pull-trigger" id="pull-trigger"></div>
+
     <div id="pull-menu" class="pull-menu">
-        <h2 style="color:var(--p); font-size: 1.1rem; text-align: center;">QUICK MENU</h2>
-        <button class="modal-btn btn-dark" onclick="window.location.reload()">🔄 Refresh App</button>
-        <button class="modal-btn btn-dark" onclick="mobileTglModal('pc-modal'); togglePullMenu(false)">💻 Switch to PC</button>
-        <button class="modal-btn btn-dark" onclick="mobileTglModal('settings-modal'); togglePullMenu(false)">⚙️ Settings</button>
-        <button class="modal-btn btn-red" onclick="togglePullMenu(false)">CLOSE</button>
+        <h2 style="color:var(--p); margin-bottom: 5px;">PAUSED</h2>
+        <p style="font-size: 0.7rem; opacity: 0.5; margin-bottom: 10px;">GAMS MOBILE MENU</p>
+        
+        <button class="modal-btn btn-red" onclick="leaveGame()">🚪 LEAVE GAME</button>
+        <button class="modal-btn btn-dark" onclick="window.location.reload()">🔄 RESTART APP</button>
+        <button class="modal-btn btn-dark" onclick="togglePullMenu(false)">▶️ RESUME</button>
+        
         <div class="pull-handle"></div>
     </div>
 
-    <div class="mobile-container" id="main-container">
-        <div class="mobile-header" id="header-trigger">
+    <iframe id="game-frame"></iframe>
+
+    <div class="mobile-container" id="main-ui">
+        <div class="mobile-header">
             <h1>GAMS</h1>
-            <p style="font-size: 0.6rem; opacity: 0.5;">Pull down for menu</p>
+            <p style="font-size: 0.6rem; opacity: 0.4;">v2.0 Mobile</p>
         </div>
 
         <div class="mobile-tabs">
@@ -201,10 +197,10 @@
         </div>
 
         <div class="mobile-search" id="search-bar">
-            <input type="text" id="mobile-search" placeholder="Search..." oninput="mobileDoSearch()">
+            <input type="text" id="mobile-search" placeholder="Search games..." oninput="mobileDoSearch()">
         </div>
 
-        <div class="mobile-content" id="scroll-area">
+        <div class="mobile-content">
             <div id="mobile-games-section" class="mobile-section active">
                 <div id="mobile-game-grid" class="mobile-game-grid"></div>
             </div>
@@ -213,48 +209,32 @@
                 <div style="padding: 20px; display: flex; justify-content: center; align-items: center; height: 100%;">
                     <div class="mobile-tile" style="padding: 40px; width: 100%;">
                         <h2>MINECRAFT</h2>
-                        <p style="margin: 10px 0 20px; opacity: 0.6;">Eaglercraft 1.8.8 Offline</p>
-                        <button class="modal-btn btn-red" onclick="window.location.href='g/aminecraftfolder/wasm_gc_jspi_offline/eaglercraft_wasm_gc_jspi_offline.html'">Launch</button>
+                        <button class="modal-btn btn-red" style="margin-top:20px" onclick="loadGame('g/aminecraftfolder/wasm_gc_jspi_offline/eaglercraft_wasm_gc_jspi_offline.html')">Launch</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="pc-modal" class="mobile-modal">
-        <div class="mobile-modal-content">
-            <h2 style="color:var(--p)">Switch to PC?</h2>
-            <p style="margin: 15px 0; font-size: 0.85rem; opacity: 0.9;">Requires keyboard & mouse/trackpad for majority of games.</p>
-            <button class="modal-btn btn-red" onclick="window.location.href='index-desktop.html'">Open PC Version</button>
-            <button class="modal-btn btn-dark" onclick="mobileTglModal('pc-modal')">Stay on Mobile</button>
-        </div>
-    </div>
-
-    <div id="settings-modal" class="mobile-modal">
-        <div class="mobile-modal-content">
-            <h2>Settings</h2>
-            <button class="modal-btn btn-dark" onclick="window.location.href='index.html'">Go to Home</button>
-            <button class="modal-btn btn-red" onclick="mobileTglModal('settings-modal')">Close</button>
-        </div>
-    </div>
-
     <script>
-        // PULL TO OPEN LOGIC
-        let touchStart = 0;
+        // PULL MENU LOGIC
+        let touchStartY = 0;
         const pullMenu = document.getElementById('pull-menu');
 
         document.addEventListener('touchstart', e => {
-            touchStart = e.touches[0].clientY;
+            touchStartY = e.touches[0].clientY;
         }, {passive: true});
 
         document.addEventListener('touchmove', e => {
-            let touchMove = e.touches[0].clientY;
-            // If pulling down from the top area
-            if (touchMove - touchStart > 120 && touchStart < 150) {
+            let touchMoveY = e.touches[0].clientY;
+            
+            // Open menu if pulling down from the top trigger area
+            if (touchMoveY - touchStartY > 80 && touchStartY < 60) {
                 togglePullMenu(true);
             }
-            // If pulling up from the bottom (while menu is open)
-            if (touchStart - touchMove > 100 && pullMenu.classList.contains('active')) {
+            
+            // Close menu if pulling up while menu is active
+            if (touchStartY - touchMoveY > 60 && pullMenu.classList.contains('active')) {
                 togglePullMenu(false);
             }
         }, {passive: true});
@@ -263,21 +243,37 @@
             pullMenu.classList.toggle('active', show);
         }
 
-        // GAME INITIALIZATION
+        // GAME LOADING SYSTEM
+        function loadGame(url) {
+            const frame = document.getElementById('game-frame');
+            const mainUi = document.getElementById('main-ui');
+            
+            frame.src = url;
+            frame.style.display = 'block';
+            mainUi.style.display = 'none';
+            togglePullMenu(false);
+        }
+
+        function leaveGame() {
+            const frame = document.getElementById('game-frame');
+            const mainUi = document.getElementById('main-ui');
+            
+            frame.src = 'about:blank';
+            frame.style.display = 'none';
+            mainUi.style.display = 'flex';
+            togglePullMenu(false);
+        }
+
+        // GRID & TABS
         function initMobileVersion() {
             const games = [
                 { name: 'Stickman Hook', url: 'g/stickmanhook.html', img: 'stickmanhook.png' },
                 { name: 'Drive Mad', url: 'g/g/drivemad/drivemad.html', img: 'drivemad.png' },
                 { name: '2048', url: 'g/2048.html', img: '2048.png' },
                 { name: 'Cookie Clicker', url: 'g/g/cookie/index.html', img: 'cookieclicker.png' },
-                { name: 'Its Raining Boxes', url: 'g/itsrainingboxes.html', img: 'itsrainingboxes.png' },
-                { name: 'Stack', url: 'g/stack.html', img: 'stack.png' },
-                { name: 'Rolling Forests', url: 'g/rollingforests.html', img: 'rollingforests.png' },
-                { name: 'Fluid Simulator', url: 'g/fluidsimulator.html', img: 'fluidsimulator.png' },
                 { name: 'Geometry Dash', url: 'g/geometrydash.html', img: 'geometrydash.png' },
-                { name: 'Wordle', url: 'g/wordle.html', img: 'wordle.png' },
-                { name: 'Paper IO 2', url: 'g/paperio2.html', img: 'paperio2.png' },
-                { name: 'Raft Wars', url: 'g/raftwars.html', img: 'raftwars.png' }
+                { name: 'Paper IO 2', url: 'g/paperio2.html', img: 'paperio2.png' }
+                // Add the rest here...
             ];
 
             const grid = document.getElementById('mobile-game-grid');
@@ -285,15 +281,8 @@
             games.forEach((game) => {
                 const tile = document.createElement('div');
                 tile.className = 'mobile-tile';
-                const img = document.createElement('img');
-                img.src = `img/${game.img}`;
-                img.onerror = () => { img.src = 'img/gams-g.png'; };
-                const name = document.createElement('div');
-                name.className = 'mobile-tile-name';
-                name.textContent = game.name;
-                tile.appendChild(img);
-                tile.appendChild(name);
-                tile.onclick = () => { window.location.href = game.url; };
+                tile.innerHTML = `<img src="img/${game.img}" onerror="this.src='img/gams-g.png'"><div>${game.name}</div>`;
+                tile.onclick = () => loadGame(game.url);
                 grid.appendChild(tile);
             });
         }
@@ -309,13 +298,9 @@
         function mobileDoSearch() {
             const q = document.getElementById('mobile-search').value.toLowerCase();
             document.querySelectorAll('.mobile-tile').forEach(tile => {
-                const name = tile.querySelector('.mobile-tile-name').textContent.toLowerCase();
+                const name = tile.innerText.toLowerCase();
                 tile.style.display = name.includes(q) ? '' : 'none';
             });
-        }
-
-        function mobileTglModal(id) {
-            document.getElementById(id).classList.toggle('active');
         }
     </script>
 </body>

@@ -5,70 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gams Mobile</title>
     <style>
-        /* THEME VARIABLES */
         :root { 
             --p: #f00; 
-            --bg-hud: rgba(20, 20, 20, 0.95); 
-            --txt: #ffffff;
-            --tile-bg: rgba(255, 255, 255, 0.08);
-            --tile-brd: rgba(255, 255, 255, 0.15);
-            --overlay-color: rgba(0, 0, 0, 0.4);
-            --ui-bg: transparent; /* Essential for SVG visibility */
-        }
-        
-        /* TRUE WHITE MODE */
-        body.light-mode {
-            --p: #f00; 
-            --bg-hud: rgba(255, 255, 255, 0.98);
-            --txt: #111111;
-            --tile-bg: rgba(0, 0, 0, 0.05);
-            --tile-brd: rgba(0, 0, 0, 0.1);
-            --overlay-color: rgba(255, 255, 255, 0.85); /* Makes background look white while keeping SVG visible */
-            --ui-bg: #ffffff;
+            --txt: #fff;
+            --tile: rgba(255, 255, 255, 0.08);
+            --brd: rgba(255, 255, 255, 0.15);
         }
 
         * { margin:0; padding:0; box-sizing:border-box; -webkit-user-select:none; user-select:none; }
         
+        /* THE FIX: Body must be transparent to see the SVG fixed behind it */
         html, body { 
             height: 100%; width: 100%; 
-            overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            overflow: hidden; font-family: sans-serif; 
             color: var(--txt);
-            background-color: #000; /* Fallback */
+            background-color: #000; 
         }
 
-        /* FIXED WALLPAPER RENDER - Layer -2 */
-        .wallpaper-container {
+        /* IBG.SVG IMPLEMENTATION */
+        .wallpaper {
             position: fixed;
             inset: 0;
-            background-image: url('ibg.svg') !important;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            z-index: -2;
+            background: url('ibg.svg') center/cover no-repeat !important;
+            z-index: 1; /* Lowest Layer */
         }
 
-        /* DYNAMIC OVERLAY - Layer -1 */
-        .theme-overlay {
+        /* Darkening overlay so you can see the text over the SVG */
+        .overlay {
             position: fixed;
             inset: 0;
-            background: var(--overlay-color);
-            z-index: -1;
-            transition: background 0.3s ease;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2;
         }
 
-        /* PULL-DOWN MENU (Flush with top) */
+        /* PULL-DOWN MENU (No Gap) */
         #pull-menu {
             position: fixed; top: 0; left: 0; width: 100%;
-            background: var(--bg-hud);
+            background: rgba(20, 20, 20, 0.95);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-bottom: 3px solid var(--p);
             z-index: 10000;
             transform: translateY(-101%);
-            will-change: transform;
             padding: calc(env(safe-area-inset-top) + 15px) 20px 30px;
             transition: transform 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
             text-align: center;
-            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
         }
 
         /* MAIN UI */
@@ -76,41 +56,41 @@
             position: relative; height: 100%; width: 100%;
             display: flex; flex-direction: column;
             padding-top: env(safe-area-inset-top);
+            z-index: 10; /* Above wallpaper */
             background: transparent;
         }
 
         .header { 
             padding: 15px 20px; 
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid var(--p);
-            background: rgba(0,0,0,0.05);
+            display: flex; justify-content: center; align-items: center;
+            border-bottom: 3px solid var(--p);
+            background: rgba(0,0,0,0.3);
         }
+        .header h1 { font-weight: 900; letter-spacing: 4px; }
 
         .scroll-area {
             flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
             padding: 15px;
+            background: transparent;
         }
 
         .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
-        /* TILES */
         .tile { 
-            background: var(--tile-bg); 
-            border: 1px solid var(--tile-brd);
+            background: var(--tile); 
+            border: 1px solid var(--brd);
             border-radius: 20px; padding: 12px; text-align: center;
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
         }
-        .tile img { width: 100%; border-radius: 15px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .tile span { font-weight: 700; font-size: 0.9rem; }
+        .tile img { width: 100%; border-radius: 15px; margin-bottom: 8px; }
+        .tile span { font-weight: bold; font-size: 0.85rem; }
 
         /* BUTTONS */
         .btn { 
             width: 100%; padding: 16px; border-radius: 15px; border: none; 
-            font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
-            margin-top: 10px;
+            font-weight: 800; text-transform: uppercase; margin-top: 10px;
         }
         .btn-red { background: var(--p); color: #fff; }
-        .btn-outline { background: transparent; color: var(--txt); border: 2px solid var(--p); }
 
         #game-frame { position: fixed; inset: 0; width: 100%; height: 100%; border: none; z-index: 5000; display: none; background: #000; }
         #pull-zone { position: fixed; top: 0; left: 0; width: 100%; height: 50px; z-index: 100000; }
@@ -118,24 +98,22 @@
 </head>
 <body>
 
-    <div class="wallpaper-container"></div>
-    <div class="theme-overlay"></div>
+    <div class="wallpaper"></div>
+    <div class="overlay"></div>
 
-    <div id="pull-zone"></div>
+    <div id="pull-zone" onclick="openMenu()"></div>
 
     <div id="pull-menu">
-        <h2 style="color:var(--p); margin-bottom: 15px;">GAME PAUSED</h2>
-        <button class="btn btn-red" onclick="exitGame()">🚪 EXIT TO MENU</button>
-        <button class="btn btn-outline" onclick="toggleTheme()">🌓 TOGGLE THEME</button>
-        <button class="btn" style="background:#888; color:#fff;" onclick="closeMenu()">▶️ RESUME</button>
+        <h2 style="color:var(--p); margin-bottom: 15px;">PAUSED</h2>
+        <button class="btn btn-red" onclick="exitGame()">EXIT TO MENU</button>
+        <button class="btn" style="background:#444; color:#fff;" onclick="closeMenu()">RESUME</button>
     </div>
 
     <iframe id="game-frame"></iframe>
 
     <div class="app-container" id="ui-main">
         <div class="header">
-            <h1 style="font-weight: 900; letter-spacing: 3px;">GAMS</h1>
-            <button onclick="openMenu()" style="background:none; border:none; font-size:1.6rem; color:var(--txt);">⚙️</button>
+            <h1>GAMS</h1>
         </div>
 
         <div class="scroll-area">
@@ -148,18 +126,7 @@
         const pullZone = document.getElementById('pull-zone');
         let startY = 0;
 
-        // THEME LOGIC
-        function toggleTheme() {
-            const isLight = document.body.classList.toggle('light-mode');
-            localStorage.setItem('gams_pref_theme', isLight ? 'light' : 'dark');
-        }
-
-        // AUTO-LOAD PREFERENCE
-        if (localStorage.getItem('gams_pref_theme') === 'light') {
-            document.body.classList.add('light-mode');
-        }
-
-        // PULL GESTURE
+        // GESTURE
         pullZone.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
         pullZone.addEventListener('touchmove', e => {
             if (e.touches[0].clientY - startY > 40) openMenu();
@@ -182,16 +149,21 @@
             closeMenu();
         }
 
-        // DATA
+        // ONLY YOUR VERIFIED WORKING GAMES
         const gamesList = [
             { n: 'Stickman Hook', u: 'g/stickmanhook.html', i: 'stickmanhook.png' },
             { n: 'Drive Mad', u: 'g/g/drivemad/drivemad.html', i: 'drivemad.png' },
             { n: '2048', u: 'g/2048.html', i: '2048.png' },
             { n: 'Cookie Clicker', u: 'g/g/cookie/index.html', i: 'cookieclicker.png' },
+            { n: 'Its Raining Boxes', u: 'g/itsrainingboxes.html', i: 'itsrainingboxes.png' },
+            { n: 'Stack', u: 'g/stack.html', i: 'stack.png' },
+            { n: 'Rolling Forest', u: 'g/rollingforests.html', i: 'rollingforests.png' },
+            { n: 'Fluid Simulator', u: 'g/fluidsimulator.html', i: 'fluidsimulator.png' },
             { n: 'Geometry Dash', u: 'g/geometrydash.html', i: 'geometrydash.png' },
+            { n: 'Worldle+', u: 'g/wordle.html', i: 'wordle.png' },
             { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' },
-            { n: 'Wordle+', u: 'g/wordle.html', i: 'wordle.png' },
-            { n: 'Raft Wars', u: 'g/raftwars.html', i: 'raftwars.png' }
+            { n: 'Raft Wars 1', u: 'g/raftwars.html', i: 'raftwars.png' },
+            { n: 'Raft Wars 2', u: 'g/raftwars2.html', i: 'raftwars2.png' }
         ];
 
         const grid = document.getElementById('grid');

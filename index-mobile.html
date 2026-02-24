@@ -5,126 +5,478 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gams Mobile</title>
     <style>
-        /* 1. FORCE SVG VISIBILITY */
+        /* ============================================
+           ROOT BACKGROUND - SVG WALLPAPER VISIBILITY
+           ============================================ */
         html {
             background: #000 url('ibg.svg') no-repeat center center fixed;
             background-size: cover;
+            background-attachment: fixed;
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
         }
 
         body {
             margin: 0;
             padding: 0;
-            font-family: sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             color: #fff;
-            background: transparent; /* Must be transparent to see the HTML background */
+            background: transparent;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
-        * { box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+        * {
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* 2. MENU FIX (NO GAP) */
+        /* ============================================
+           PULL-DOWN MENU (HIDDEN ABOVE SCREEN)
+           ============================================ */
         #pull-menu {
-            position: fixed; top: 0; left: 0; width: 100%;
-            background: rgba(15, 15, 15, 0.98);
-            border-bottom: 3px solid #f00;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.98);
+            border-bottom: 4px solid #f00;
             z-index: 10000;
             transform: translateY(-101%);
-            padding: calc(env(safe-area-inset-top) + 15px) 20px 30px;
-            transition: transform 0.3s ease;
+            padding: calc(env(safe-area-inset-top) + 20px) 20px 30px;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
             text-align: center;
+            overflow-y: auto;
+            max-height: 100vh;
         }
 
-        /* 3. LAYOUT */
+        #pull-menu.open {
+            transform: translateY(0);
+        }
+
+        #pull-menu h2 {
+            color: #f00;
+            margin: 0 0 20px 0;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        /* ============================================
+           MAIN UI LAYER (TRANSPARENT BACKGROUND)
+           ============================================ */
         .ui-layer {
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             z-index: 10;
+            width: 100%;
             height: 100%;
             display: flex;
             flex-direction: column;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(3px);
             padding-top: env(safe-area-inset-top);
-            background: rgba(0, 0, 0, 0.4); /* Subtle tint so text is readable */
+            overflow: hidden;
         }
 
-        .header { 
-            padding: 15px; 
-            border-bottom: 3px solid #f00;
-            background: rgba(0,0,0,0.7);
+        .ui-layer.hidden {
+            display: none;
+        }
+
+        /* ============================================
+           HEADER
+           ============================================ */
+        .header {
+            padding: 14px 20px;
+            border-bottom: 4px solid #f00;
+            background: rgba(0, 0, 0, 0.8);
             text-align: center;
-            font-weight: 900;
-            letter-spacing: 3px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
+        .header h1 {
+            margin: 0;
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(255, 0, 0, 0.3);
+            flex: 1;
+            text-align: center;
+        }
+
+        .desktop-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            position: absolute;
+            right: 20px;
+            z-index: 1001;
+        }
+
+        .desktop-btn:active {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 0, 0, 0.3);
+            transform: scale(0.95);
+        }
+
+        /* ============================================
+           GAME GRID - SPACIOUS SCROLLABLE LAYOUT
+           ============================================ */
         .grid {
             flex: 1;
             overflow-y: auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            padding: 15px;
             -webkit-overflow-scrolling: touch;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 20px;
+            margin: 0;
         }
 
+        .grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .grid::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .grid::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        /* ============================================
+           GAME TILES - CARD STYLE WITH NAME BACKING
+           ============================================ */
         .tile {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 15px;
-            padding: 10px;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
             text-align: center;
-            backdrop-filter: blur(8px);
+            backdrop-filter: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: visible;
+            box-shadow: none;
+            aspect-ratio: auto;
+            min-height: auto;
         }
-        .tile img { width: 100%; border-radius: 10px; margin-bottom: 5px; }
 
-        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; margin-top: 10px; text-transform: uppercase; }
-        .btn-red { background: #f00; color: #fff; }
+        .tile:active {
+            background: transparent;
+            border-color: transparent;
+            transform: scale(0.95);
+            box-shadow: none;
+        }
 
-        #game-frame { position: fixed; inset: 0; width: 100%; height: 100%; border: none; z-index: 5000; display: none; background: #000; }
-        #pull-zone { position: fixed; top: 0; left: 0; width: 100%; height: 50px; z-index: 100000; }
+        /* Image container */
+        .tile-image-wrapper {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px 8px 0 0;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .tile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .tile img.missing {
+            opacity: 0.5;
+        }
+
+        /* Label section - backing card */
+        .tile-label {
+            padding: 8px 10px;
+            background: rgba(30, 30, 30, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #fff;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            line-height: 1.3;
+        }
+
+        /* ============================================
+           BUTTONS
+           ============================================ */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            font-size: 15px;
+            margin-top: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-user-select: none;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-red {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .btn-dark {
+            background: #222;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* ============================================
+           GAME FRAME
+           ============================================ */
+        #game-frame {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            z-index: 5000;
+            display: none;
+            background: #000;
+        }
+
+        #game-frame.active {
+            display: block;
+        }
+
+        /* ============================================
+           PULL-DOWN ZONE (INVISIBLE TAP AREA)
+           ============================================ */
+        #pull-zone {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            z-index: 100000;
+            cursor: pointer;
+        }
+
+        /* ============================================
+           MODAL & WARNING
+           ============================================ */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 20, 0.98);
+            border: 2px solid rgba(255, 0, 0, 0.4);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content h2 {
+            color: #f00;
+            margin: 0 0 15px 0;
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .modal-content p {
+            color: #fff;
+            margin: 0 0 25px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            max-width: 150px;
+        }
+
+        .modal-btn-proceed {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: #fff;
+        }
+
+        .modal-btn-proceed:active {
+            transform: scale(0.95);
+        }
+
+        .modal-btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-btn-cancel:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
 
-    <div id="pull-zone" onclick="toggleMenu()"></div>
+    <!-- INVISIBLE PULL-DOWN TRIGGER ZONE -->
+    <div id="pull-zone"></div>
 
-    <div id="pull-menu">
-        <h2 style="color:#f00; margin-bottom: 10px;">PAUSED</h2>
-        <button class="btn btn-red" onclick="exitGame()">EXIT TO MENU</button>
-        <button class="btn" style="background:#444; color:#fff;" onclick="toggleMenu()">RESUME</button>
+    <!-- MODAL WARNING -->
+    <div id="desktop-modal" class="modal">
+        <div class="modal-content">
+            <h2>⚠ DESKTOP MODE</h2>
+            <p>Most games require a keyboard and mouse.<br>The UI will be less readable on mobile.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeDesktopModal()">CANCEL</button>
+                <button class="modal-btn modal-btn-proceed" onclick="proceedToDesktop()">PROCEED</button>
+            </div>
+        </div>
     </div>
 
+    <!-- PULL-DOWN MENU (HIDDEN ABOVE) -->
+    <div id="pull-menu">
+        <h2>PAUSED</h2>
+        <button class="btn btn-red" onclick="exitGame()">EXIT TO MENU</button>
+        <button class="btn btn-dark" onclick="toggleMenu()">RESUME GAME</button>
+    </div>
+
+    <!-- GAME IFRAME (HIDDEN BY DEFAULT) -->
     <iframe id="game-frame"></iframe>
 
+    <!-- MAIN UI LAYER -->
     <div class="ui-layer" id="main-ui">
-        <div class="header"><h1>GAMS</h1></div>
+        <div class="header">
+            <h1>GAMS</h1>
+            <button class="desktop-btn" onclick="showDesktopModal()">DESKTOP</button>
+        </div>
         <div class="grid" id="grid"></div>
     </div>
 
     <script>
+        // ============================================
         // MENU TOGGLE
+        // ============================================
         function toggleMenu() {
-            const m = document.getElementById('pull-menu');
-            const isOpen = m.style.transform === 'translateY(0%)';
-            m.style.transform = isOpen ? 'translateY(-101%)' : 'translateY(0%)';
+            const menu = document.getElementById('pull-menu');
+            menu.classList.toggle('open');
         }
 
+        // ============================================
+        // DESKTOP MODE MODAL
+        // ============================================
+        function showDesktopModal() {
+            document.getElementById('desktop-modal').classList.add('active');
+        }
+
+        function closeDesktopModal() {
+            document.getElementById('desktop-modal').classList.remove('active');
+        }
+
+        function proceedToDesktop() {
+            window.location.href = 'index-desktop.html';
+        }
+
+        // ============================================
+        // GAME LAUNCHER
+        // ============================================
         function launchGame(url) {
             const frame = document.getElementById('game-frame');
+            const mainUI = document.getElementById('main-ui');
+            const menu = document.getElementById('pull-menu');
+
             frame.src = url;
-            frame.style.display = 'block';
-            document.getElementById('main-ui').style.display = 'none';
-            document.getElementById('pull-menu').style.transform = 'translateY(-101%)';
+            frame.classList.add('active');
+            mainUI.classList.add('hidden');
+            menu.classList.remove('open');
         }
 
+        // ============================================
+        // EXIT GAME
+        // ============================================
         function exitGame() {
             const frame = document.getElementById('game-frame');
+            const mainUI = document.getElementById('main-ui');
+            const menu = document.getElementById('pull-menu');
+
+            frame.classList.remove('active');
             frame.src = '';
-            frame.style.display = 'none';
-            document.getElementById('main-ui').style.display = 'flex';
-            document.getElementById('pull-menu').style.transform = 'translateY(-101%)';
+            mainUI.classList.remove('hidden');
+            menu.classList.remove('open');
         }
 
-        // VERIFIED WORKING GAMES ONLY
+        // ============================================
+        // VERIFIED WORKING GAMES
+        // ============================================
         const games = [
             { n: 'Stickman Hook', u: 'g/stickmanhook.html', i: 'stickmanhook.png' },
             { n: 'Drive Mad', u: 'g/g/drivemad/drivemad.html', i: 'drivemad.png' },
@@ -138,17 +490,40 @@
             { n: 'Worldle+', u: 'g/wordle.html', i: 'wordle.png' },
             { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' },
             { n: 'Raft Wars 1', u: 'g/raftwars.html', i: 'raftwars.png' },
-            { n: 'Raft Wars 2', u: 'g/raftwars2.html', i: 'raftwars2.png' }
+            { n: 'Raft Wars 2', u: 'g/raftwars2.html', i: 'raftwars2.html' }
         ];
 
+        // ============================================
+        // RENDER GAME GRID
+        // ============================================
         const grid = document.getElementById('grid');
-        games.forEach(g => {
-            const div = document.createElement('div');
-            div.className = 'tile';
-            div.innerHTML = `<img src="img/${g.i}" onerror="this.src='img/gams-g.png'"><div>${g.n}</div>`;
-            div.onclick = () => launchGame(g.u);
-            grid.appendChild(div);
+        games.forEach((game) => {
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+            
+            const imageWrapper = document.createElement('div');
+            imageWrapper.className = 'tile-image-wrapper';
+            
+            const img = document.createElement('img');
+            img.src = `img/${game.i}`;
+            img.alt = game.n;
+            img.onerror = function() {
+                this.src = 'img/gams-g.png';
+                this.classList.add('missing');
+            };
+            
+            const label = document.createElement('div');
+            label.className = 'tile-label';
+            label.textContent = game.n;
+            
+            imageWrapper.appendChild(img);
+            tile.appendChild(imageWrapper);
+            tile.appendChild(label);
+            
+            tile.onclick = () => launchGame(game.u);
+            grid.appendChild(tile);
         });
     </script>
+
 </body>
 </html>

@@ -24,9 +24,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="0.45254834"
-     inkscape:cx="-414.32038"
-     inkscape:cy="630.87183"
+     inkscape:zoom="0.25"
+     inkscape:cx="-738"
+     inkscape:cy="1494"
      inkscape:window-width="1920"
      inkscape:window-height="1057"
      inkscape:window-x="-8"
@@ -37,10 +37,72 @@
      id="defs1">
     <pattern
        inkscape:collect="always"
-       xlink:href="#pattern6"
+       xlink:href="#Hexagons"
        preserveAspectRatio="xMidYMid"
-       id="pattern12"
-       patternTransform="translate(251.53429,222.73541)" />
+       id="pattern19"
+       patternTransform="matrix(0.5,0,0,0.5,1,1)"
+       x="0"
+       y="0" />
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="100"
+       height="87"
+       preserveAspectRatio="xMidYMid"
+       patternTransform="translate(1,1) scale(0.5,0.5)"
+       style="fill:#ffffff"
+       id="Hexagons"
+       inkscape:label="Hexagons packing grid"
+       inkscape:collect="always"
+       inkscape:isstock="true">
+      <path
+         id="path27"
+         style="stroke:none"
+         d="M 23.246093,0 0,13.382812 V 44.689453 L 0.0839844,44.640625 24.033203,58.505859 24.001953,86.332031 22.841796,87 h 4.478516 L 26.068359,86.275391 26.099609,58.449219 50.083984,44.640625 74.033203,58.505859 74.001953,86.332031 72.841796,87 h 4.478516 L 76.068359,86.275391 76.099609,58.449219 100,44.689453 V 13.365234 L 76.919921,0 H 73.246093 L 50.015625,13.373047 26.919921,0 Z M 25.083984,1.25 49.033203,15.115234 49.001953,42.941406 25.017578,56.75 1.0019531,42.845703 l 0.033203,-27.75 z m 50,0 24.017576,13.904297 -0.0352,27.75 L 75.017578,56.75 51.068359,42.884766 51.099609,15.058594 Z" />
+    </pattern>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath14">
+      <rect
+         style="fill:none;stroke:#000000;stroke-width:0.999999;stroke-linecap:butt;stroke-linejoin:bevel;paint-order:stroke markers fill;stop-color:#000000"
+         id="rect14"
+         width="44.999748"
+         height="77.937294"
+         x="251.53429"
+         y="222.73541" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath9">
+      <rect
+         style="fill:none;stroke:#000000;stroke-width:0.999999;stroke-linecap:butt;stroke-linejoin:bevel;paint-order:stroke markers fill;stop-color:#000000"
+         id="rect9"
+         width="44.999748"
+         height="77.937294"
+         x="251.53429"
+         y="222.73541" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4">
+      <rect
+         style="fill:none;stroke:#000000;stroke-width:0.999999;stroke-linecap:butt;stroke-linejoin:bevel;paint-order:stroke markers fill;stop-color:#000000"
+         id="rect4"
+         width="44.999748"
+         height="77.937294"
+         x="251.53429"
+         y="222.73541" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath2">
+      <rect
+         style="fill:none;stroke:#000000;stroke-width:0.999999;stroke-linecap:butt;stroke-linejoin:bevel;paint-order:stroke markers fill;stop-color:#000000"
+         id="rect2"
+         width="44.999748"
+         height="77.937294"
+         x="251.53429"
+         y="222.73541" />
+    </clipPath>
     <clipPath
        clipPathUnits="userSpaceOnUse"
        id="clipPath11">
@@ -52,23 +114,6 @@
          x="251.53429"
          y="222.73541" />
     </clipPath>
-    <pattern
-       patternUnits="userSpaceOnUse"
-       width="44.999748"
-       height="77.937294"
-       patternTransform="translate(251.53429,222.73541)"
-       preserveAspectRatio="xMidYMid"
-       id="pattern6"
-       inkscape:label="Hexagonal grid"
-       inkscape:collect="always"
-       inkscape:isstock="true">
-      <path
-         id="path5"
-         style="fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:bevel;paint-order:stroke markers fill;stop-color:#000000"
-         d="m 251.51664,326.68327 5e-4,-26.00078 -22.51716,13.00073 0.0171,25.97039 z m -45.01664,-0.0304 22.5171,13.0008 -4.3e-4,-26.0008 -22.49953,-12.97038 z m 22.53472,-38.97038 -22.51758,13 22.51758,13 22.48242,-13 z m 67.49906,39.00078 5e-4,-26.00078 -22.51716,13.00073 0.0171,25.97039 z m -45.01664,-0.0304 22.5171,13.0008 -4.3e-4,-26.0008 -22.49953,-12.97038 z m 22.53472,-38.97038 -22.51758,13 22.51758,13 22.48242,-13 z m -0.0267,77.97196 5e-4,-26.00078 -22.51716,13.00073 0.0171,25.97039 z m -45.01664,-0.0304 22.5171,13.0008 -4.3e-4,-26.0008 -22.49953,-12.97038 z m 22.53472,-38.97038 -22.51758,13 22.51758,13 22.48242,-13 z m 67.49906,39.00078 5e-4,-26.00078 -22.51716,13.00073 0.0171,25.97039 z m -45.01664,-0.0304 22.5171,13.0008 -4.3e-4,-26.0008 -22.49953,-12.97038 z m 22.53472,-38.97038 -22.51758,13 22.51758,13 22.48242,-13 z m -45.04374,-77.91748 5e-4,-26.00078 -22.51716,13.00073 0.0171,25.97039 z m -45.01664,-0.0304 22.5171,13.0008 -4.3e-4,-26.0008 -22.49953,-12.97038 z m 22.53472,-38.97038 -22.51758,13 22.51758,13 22.48242,-13 z m 67.49906,39.00078 5e-4,-26.00078 -22.51716,13.00073 0.0171,25.97039 z m -45.01664,-0.0304 22.5171,13.0008 -4.3e-4,-26.0008 -22.49953,-12.97038 z m 22.53472,-38.97038 -22.51758,13 22.51758,13 22.48242,-13 z m -0.0267,77.97196 5e-4,-26.00078 -22.51716,13.00073 0.0171,25.97039 z m -45.01664,-0.0304 22.5171,13.0008 -4.3e-4,-26.0008 -22.49953,-12.97038 z m 22.53472,-38.97038 -22.51758,13 22.51758,13 22.48242,-13 z m 67.49906,39.00078 5e-4,-26.00078 -22.51716,13.00073 0.0171,25.97039 z m -45.01664,-0.0304 22.5171,13.0008 -4.3e-4,-26.0008 -22.49953,-12.97038 z m 22.53472,-38.97038 -22.51758,13 22.51758,13 22.48242,-13 z"
-         clip-path="url(#clipPath24)"
-         transform="translate(-251.53429,-222.73541)" />
-    </pattern>
     <clipPath
        clipPathUnits="userSpaceOnUse"
        id="clipPath10">
@@ -113,17 +158,86 @@
          x="262.48285"
          y="121.00073" />
     </clipPath>
+    <pattern
+       inkscape:collect="always"
+       xlink:href="#Hexagons-8"
+       preserveAspectRatio="xMidYMid"
+       id="pattern19-2"
+       patternTransform="matrix(0.5,0,0,0.5,2.3229168,-0.41102726)"
+       x="0"
+       y="0" />
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="100"
+       height="87"
+       preserveAspectRatio="xMidYMid"
+       patternTransform="translate(1,1) scale(0.5,0.5)"
+       style="fill:#ed0000"
+       id="Hexagons-8"
+       inkscape:label="Hexagons packing grid"
+       inkscape:collect="always"
+       inkscape:isstock="true">
+      <path
+         id="path27-6"
+         style="stroke:none"
+         d="M 23.246093,0 0,13.382812 V 44.689453 L 0.0839844,44.640625 24.033203,58.505859 24.001953,86.332031 22.841796,87 h 4.478516 L 26.068359,86.275391 26.099609,58.449219 50.083984,44.640625 74.033203,58.505859 74.001953,86.332031 72.841796,87 h 4.478516 L 76.068359,86.275391 76.099609,58.449219 100,44.689453 V 13.365234 L 76.919921,0 H 73.246093 L 50.015625,13.373047 26.919921,0 Z M 25.083984,1.25 49.033203,15.115234 49.001953,42.941406 25.017578,56.75 1.0019531,42.845703 l 0.033203,-27.75 z m 50,0 24.017576,13.904297 -0.0352,27.75 L 75.017578,56.75 51.068359,42.884766 51.099609,15.058594 Z" />
+    </pattern>
+    <pattern
+       inkscape:collect="always"
+       xlink:href="#Hexagons-8-9"
+       preserveAspectRatio="xMidYMid"
+       id="pattern19-2-8"
+       patternTransform="matrix(0.5,0,0,0.5,0.50293287,1.8644179)"
+       x="0"
+       y="0" />
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="100"
+       height="87"
+       preserveAspectRatio="xMidYMid"
+       patternTransform="translate(1,1) scale(0.5,0.5)"
+       style="fill:#ed0000"
+       id="Hexagons-8-9"
+       inkscape:label="Hexagons packing grid"
+       inkscape:collect="always"
+       inkscape:isstock="true">
+      <path
+         id="path27-6-3"
+         style="stroke:none"
+         d="M 23.246093,0 0,13.382812 V 44.689453 L 0.0839844,44.640625 24.033203,58.505859 24.001953,86.332031 22.841796,87 h 4.478516 L 26.068359,86.275391 26.099609,58.449219 50.083984,44.640625 74.033203,58.505859 74.001953,86.332031 72.841796,87 h 4.478516 L 76.068359,86.275391 76.099609,58.449219 100,44.689453 V 13.365234 L 76.919921,0 H 73.246093 L 50.015625,13.373047 26.919921,0 Z M 25.083984,1.25 49.033203,15.115234 49.001953,42.941406 25.017578,56.75 1.0019531,42.845703 l 0.033203,-27.75 z m 50,0 24.017576,13.904297 -0.0352,27.75 L 75.017578,56.75 51.068359,42.884766 51.099609,15.058594 Z" />
+    </pattern>
   </defs>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       style="fill:url(#pattern12);fill-rule:evenodd;stroke-width:1.13241"
-       id="rect1"
-       width="210.5224"
-       height="2501.1016"
-       x="-0.073844843"
-       y="0.12362228" />
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke-width:0.264583"
+       id="rect3"
+       width="214.56732"
+       height="2500.5571"
+       x="-1.7539562"
+       y="-0.58465207" />
+    <rect
+       style="fill:url(#pattern19);fill-rule:evenodd;stroke-width:0;stroke:none;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3-6"
+       width="214.56732"
+       height="2500.5571"
+       x="-1.3229167"
+       y="-1.322942" />
+    <rect
+       style="fill:url(#pattern19-2);fill-rule:evenodd;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       id="rect3-6-4"
+       width="214.56732"
+       height="2500.5571"
+       x="3.1789145e-07"
+       y="-2.7349138" />
+    <rect
+       style="fill:url(#pattern19-2-8);fill-rule:evenodd;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       id="rect3-6-4-6"
+       width="214.56732"
+       height="2500.5571"
+       x="-1.8199843"
+       y="-0.45943752" />
   </g>
 </svg>

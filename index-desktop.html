@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Gams</title>
+    <title>Rhys's Games</title>
     <link rel="icon" id="tab-icon" href="img/gams-g.png">
     <style>
         :root { --p: #f00; --g: rgba(15,15,15,.95); --b: rgba(255,255,255,.12); --glow: 0 0 25px rgba(255,0,0,.4); }
         * { margin:0; padding:0; box-sizing:border-box; outline:0; -webkit-user-select:none; user-select:none; scrollbar-width:none; }
         ::-webkit-scrollbar { display:none; }
-        body { color:#fff; font-family:'Segoe UI',sans-serif; background:#666; min-height:100vh; overflow-x:hidden; background-size:100% auto; background-attachment:scroll; }
+        body { color:#fff; font-family:'Segoe UI',sans-serif; background:#666; min-height:100vh; overflow-x:hidden; background-size:cover; background-attachment:scroll; background-repeat:no-repeat; }
         
         #bg-switcher { position:fixed; top:-60px; left:15px; z-index:9999; background:var(--g); border:1px solid var(--b); padding:8px 12px; border-radius:8px; cursor:pointer; font-size:.65rem; font-weight:900; text-transform:uppercase; color:#fff; transition:.4s; opacity:0; }
         #bg-switcher.visible { top:15px; opacity:1; }
@@ -95,7 +95,7 @@
                 <button class="btn" onclick="setCloak('Google','https://google.com/favicon.ico')">Google</button>
                 <button class="btn" onclick="setCloak('Home - Classroom','https://ssl.gstatic.com/classroom/favicon.png')">Classroom</button>
                 <button class="btn" onclick="setCloak('My Drive','https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png')">Drive</button>
-                <button class="btn" onclick="setCloak('Gams','img/gams-g.png')">Reset</button>
+                <button class="btn" onclick="setCloak('Rhys's Games','img/gams-g.png')">Reset</button>
             </div>
             <button class="btn" style="width:100%" onclick="tgl('cloak-modal')">Close</button>
         </div>
@@ -146,7 +146,7 @@
 
     <div id="dashboard">
         <div class="header">
-            <h1 style="font-size:3.5rem;letter-spacing:12px;text-shadow:0 0 20px var(--p)">GAMS</h1>
+            <h1 style="font-size:3.5rem;letter-spacing:12px;text-shadow:0 0 20px var(--p)">RHYS'S GAMES</h1>
             <p style="font-weight:900;opacity:.8">LIBRARY: <span id="count">0</span></p>
         </div>
         <div class="nav">
@@ -166,7 +166,7 @@
 <script>
     const bgs = [
         {s:'bg.svg',  p:'center -475px', f:'#666666'},
-        {s:'bg2.svg', p:'center -800px', f:'#6E6D6B', n:0}
+        {s:'bg2.svg', p:'center top', f:'#6E6D6B', n:0}
     ];
     let curBg = 0, sTar = 0, sAnim = false;
 
@@ -265,6 +265,9 @@
         document.body.style.backgroundImage = `url('${c.s}')`;
         document.body.style.backgroundPosition = c.p;
         document.body.style.backgroundColor = c.f;
+        document.body.style.backgroundSize = i === 1 ? 'contain' : 'cover';
+        document.body.style.backgroundAttachment = 'scroll';
+        document.body.style.backgroundRepeat = 'no-repeat';
         document.getElementById('snow').style.display = c.n === 0 ? 'none' : 'block';
         curBg = i;
         localStorage.setItem('gbg', i);

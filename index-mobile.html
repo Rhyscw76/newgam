@@ -6,11 +6,17 @@
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gams Mobile</title>
     <style>
+        :root {
+            --p: #f00;
+            --g: rgba(0, 0, 0, 0.9);
+            --b: rgba(255, 255, 255, 0.2);
+        }
+
         html {
             background: #000 url('ibg.svg') no-repeat center center fixed;
             background-size: cover;
             background-attachment: fixed;
-            height: 100%;
+            min-height: 100%;
             width: 100%;
             margin: 0;
             padding: 0;
@@ -22,12 +28,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             color: #fff;
             background: transparent;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            position: fixed;
-            top: 0;
-            left: 0;
+            min-height: 100vh;
         }
 
         * {
@@ -45,7 +46,7 @@
             width: 100%;
             background: rgba(10, 10, 10, 0.98);
             border-bottom: 4px solid #f00;
-            z-index: 9998;
+            z-index: 9997;
             transform: translateY(-101%);
             padding: calc(env(safe-area-inset-top) + 20px) 20px 30px;
             transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -67,72 +68,139 @@
         }
 
         .ui-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            position: relative;
             z-index: 10;
             width: 100%;
-            height: 100%;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(3px);
             padding-top: env(safe-area-inset-top);
-            overflow: hidden;
         }
 
         .ui-layer.hidden {
             display: none;
         }
 
-        .header {
+        /* FLOATING TOP BAR PANEL */
+        .top-bar {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 14px 20px;
-            border-bottom: 4px solid #f00;
-            background: rgba(0, 0, 0, 0.8);
-            text-align: center;
-            flex-shrink: 0;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            background: rgba(0, 0, 0, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            padding: 10px 14px 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 540px;
+            width: calc(100% - 16px);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+        }
+
+        /* GAMS bubble centered above search, always glowing red */
+        .gams-bubble-row {
+            display: flex;
+            justify-content: center;
+        }
+
+        .header-bubble {
+            padding: 8px 24px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: radial-gradient(circle at top, rgba(255,255,255,0.12), rgba(0,0,0,0.9));
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.15s ease;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+        }
+
+        .header-bubble:active {
+            transform: scale(0.97);
+        }
+
+        .header-bubble h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 6px;
+            color: #fff;
+            text-shadow:
+                0 0 8px rgba(255, 0, 0, 0.8),
+                0 0 16px rgba(255, 0, 0, 0.7),
+                0 0 24px rgba(255, 0, 0, 0.6);
+        }
+
+        .header-row {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 999px;
+            padding: 6px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            gap: 8px;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .fullscreen-circle {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.7);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 10000;
-        }
-
-        .header:active {
-            background: rgba(0, 0, 0, 0.9);
-            transform: scale(0.98);
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 36px;
-            font-weight: 900;
-            letter-spacing: 4px;
+            font-size: 11px;
             color: #fff;
-            text-shadow: 0 2px 10px rgba(255, 0, 0, 0.3);
+            cursor: pointer;
+            flex-shrink: 0;
+            background: rgba(0, 0, 0, 0.7);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
         }
 
-        .desktop-btn {
-            display: none;
+        .fullscreen-circle:active {
+            transform: scale(0.9);
+            box-shadow: 0 0 12px rgba(255, 0, 0, 0.5);
+            border-color: var(--p);
+        }
+
+        .library-line {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.75);
+            text-align: center;
         }
 
         .grid {
-            flex: 1;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
             padding: 20px;
             margin: 0;
-            margin-top: 80px; /* below fixed header */
+            margin-top: 170px; /* space for floating top bar */
+            margin-bottom: 40px;
         }
 
         .grid::-webkit-scrollbar {
@@ -148,20 +216,30 @@
             border-radius: 3px;
         }
 
+        /* Desktop-style cards */
         .tile {
-            background: transparent;
-            border: none;
-            padding: 0;
+            background: rgba(15, 15, 15, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 12px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
             display: flex;
             flex-direction: column;
-            overflow: visible;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
         }
 
         .tile:active {
-            transform: scale(0.95);
+            transform: translateY(-4px);
+            border-color: var(--p);
+            box-shadow: 0 0 18px rgba(255, 0, 0, 0.6);
+        }
+
+        .tile.selected {
+            border-color: var(--p);
+            box-shadow: 0 0 18px rgba(255, 0, 0, 0.7);
         }
 
         .tile-image-wrapper {
@@ -169,12 +247,8 @@
             aspect-ratio: 1 / 1;
             overflow: hidden;
             background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px 8px 0 0;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            border-radius: 23px;
+            margin-bottom: 8px;
         }
 
         .tile img {
@@ -182,16 +256,15 @@
             height: 100%;
             object-fit: cover;
             object-position: center;
+            display: block;
         }
 
         .tile-label {
-            padding: 8px 10px;
-            background: rgba(30, 30, 30, 0.95);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-            font-size: 12px;
-            font-weight: 700;
+            padding: 4px 4px 2px;
+            background: transparent;
+            border: none;
+            font-size: 11px;
+            font-weight: 800;
             color: #fff;
             text-overflow: ellipsis;
             overflow: hidden;
@@ -243,16 +316,43 @@
             display: block;
         }
 
-        /* click-through pull zone so header is clickable */
         #pull-zone {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 60px;
+            height: 20px;
             z-index: 9999;
             cursor: pointer;
+            pointer-events: auto;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 4px;
+        }
+
+        .pull-indicator {
+            width: 40px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
             pointer-events: none;
+            transition: opacity 0.3s ease;
+            opacity: 1;
+        }
+
+        #pull-zone:hover .pull-indicator {
+            opacity: 0.7;
+        }
+
+        #game-frame.active ~ #pull-zone .pull-indicator {
+            opacity: 0;
+        }
+
+        .ui-layer:not(.hidden) #pull-zone .pull-indicator {
+            width: 60px;
+            height: 5px;
+            opacity: 0.4;
         }
 
         .modal {
@@ -332,11 +432,59 @@
         .modal-btn-cancel:active {
             transform: scale(0.95);
         }
+
+        .flash-popup {
+            position: fixed;
+            right: 12px;
+            bottom: 12px;
+            z-index: 15000;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 18px rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        .flash-popup.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .flash-popup button {
+            border: none;
+            background: linear-gradient(135deg, #ffcc00, #ff8800);
+            color: #000;
+            font-weight: 800;
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(255, 200, 0, 0.3);
+        }
+
+        .flash-popup button:active {
+            transform: scale(0.95);
+        }
+
+        .flash-popup span {
+            font-size: 11px;
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body>
 
-<div id="pull-zone"></div>
+<div id="pull-zone">
+    <div class="pull-indicator"></div>
+</div>
 
 <div id="pull-menu">
     <h2>PAUSED</h2>
@@ -344,19 +492,6 @@
     <button class="btn btn-dark" onclick="toggleMenu()">RESUME GAME</button>
 </div>
 
-<!-- existing generic desktop modal (if you still want it) -->
-<div id="desktop-modal" class="modal">
-    <div class="modal-content">
-        <h2>⚠ DESKTOP MODE</h2>
-        <p>Most games require a keyboard and mouse.<br>The UI will be less readable on mobile.</p>
-        <div class="modal-buttons">
-            <button class="modal-btn modal-btn-cancel" onclick="closeModal()">CANCEL</button>
-            <button class="modal-btn modal-btn-proceed" onclick="goToDesktop()">PROCEED</button>
-        </div>
-    </div>
-</div>
-
-<!-- NEW: header-specific desktop warning modal -->
 <div id="desktop-header-modal" class="modal">
     <div class="modal-content">
         <h2>⚠ DESKTOP VERSION</h2>
@@ -368,14 +503,32 @@
     </div>
 </div>
 
-<iframe id="game-frame"></iframe>
+<iframe id="game-frame" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-pointer-lock"></iframe>
 
 <div class="ui-layer" id="main-ui">
-    <!-- header now opens the desktop-warning modal instead of direct link -->
-    <div class="header" onclick="openDesktopHeaderModal()">
-        <h1>GAMS</h1>
+
+    <div class="top-bar">
+        <div class="gams-bubble-row">
+            <div class="header-bubble" onclick="openDesktopHeaderModal()">
+                <h1>GAMS</h1>
+            </div>
+        </div>
+        <div class="header-row">
+            <div class="search-container">
+                <input id="search-input" class="search-input" type="text"
+                       placeholder="Search your games here..." oninput="filterGames()">
+                <div class="fullscreen-circle" onclick="toggleFS(event)">⛶</div>
+            </div>
+        </div>
+        <div id="library-label" class="library-line">LIBRARY: 0/77 GAMES</div>
     </div>
+
     <div class="grid" id="grid"></div>
+</div>
+
+<div id="flash-popup" class="flash-popup">
+    <span>Flash games available</span>
+    <button onclick="openFlash()">Flash</button>
 </div>
 
 <script>
@@ -383,19 +536,11 @@
         document.getElementById('pull-menu').classList.toggle('open');
     }
 
-    function openModal() {
-        document.getElementById('desktop-modal').classList.add('active');
-    }
+    // Make pull-zone clickable to open menu - works with mouse and touch
+    const pullZone = document.getElementById('pull-zone');
+    pullZone.addEventListener('click', toggleMenu);
+    pullZone.style.pointerEvents = 'auto';
 
-    function closeModal() {
-        document.getElementById('desktop-modal').classList.remove('active');
-    }
-
-    function goToDesktop() {
-        window.location.href = 'index-desktop.html';
-    }
-
-    // header desktop modal controls
     function openDesktopHeaderModal() {
         document.getElementById('desktop-header-modal').classList.add('active');
     }
@@ -408,11 +553,21 @@
         window.location.href = 'index-desktop.html';
     }
 
-    function launchGame(url) {
+    function launchGame(url, tileEl) {
+        if (tileEl) {
+            document.querySelectorAll('.tile.selected').forEach(t => t.classList.remove('selected'));
+            tileEl.classList.add('selected');
+        }
+        // Ensure game loads in iframe without opening new window
         document.getElementById('game-frame').src = url;
         document.getElementById('game-frame').classList.add('active');
         document.getElementById('main-ui').classList.add('hidden');
         document.getElementById('pull-menu').classList.remove('open');
+        document.getElementById('flash-popup').classList.remove('visible');
+        document.body.style.overflow = 'hidden';
+        
+        // Prevent any target="_blank" behavior
+        return false;
     }
 
     function exitGame() {
@@ -420,25 +575,46 @@
         document.getElementById('game-frame').src = '';
         document.getElementById('main-ui').classList.remove('hidden');
         document.getElementById('pull-menu').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function toggleFS(event) {
+        if (event) event.stopPropagation();
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            const el = document.documentElement;
+            if (el.requestFullscreen) el.requestFullscreen();
+            else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        }
+    }
+
+    function openFlash() {
+        window.location.href = 'g/g/ruffle/ruffle.html';
     }
 
     const games = [
-        {n: 'Stickman Hook', u: 'g/stickmanhook.html', i: 'stickmanhook.png'},
-        {n: 'Drive Mad', u: 'g/g/drivemad/drivemad.html', i: 'drivemad.png'},
-        {n: '2048', u: 'g/2048.html', i: '2048.png'},
-        {n: 'Cookie Clicker', u: 'g/g/cookie/index.html', i: 'cookieclicker.png'},
-        {n: 'Its Raining Boxes', u: 'g/itsrainingboxes.html', i: 'itsrainingboxes.png'},
-        {n: 'Stack', u: 'g/stack.html', i: 'stack.png'},
-        {n: 'Rolling Forest', u: 'g/rollingforests.html', i: 'rollingforests.png'},
-        {n: 'Fluid Simulator', u: 'g/fluidsimulator.html', i: 'fluidsimulator.png'},
-        {n: 'Geometry Dash', u: 'g/geometrydash.html', i: 'geometrydash.png'},
-        {n: 'Worldle+', u: 'g/wordle.html', i: 'wordle.png'},
-        {n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png'},
-        {n: 'Raft Wars 1', u: 'g/raftwars.html', i: 'raftwars.png'},
-        {n: 'Raft Wars 2', u: 'g/raftwars2.html', i: 'raftwars2.html'}
+        { n: 'Stickman Hook', u: 'g/stickmanhook.html', i: 'stickmanhook.png' },
+        { n: 'Drive Mad', u: 'g/g/drivemad/drivemad.html', i: 'drivemad.png' },
+        { n: '2048', u: 'g/2048.html', i: '2048.png' },
+        { n: 'Cookie Clicker', u: 'g/g/cookie/index.html', i: 'cookieclicker.png' },
+        { n: 'Its Raining Boxes', u: 'g/itsrainingboxes.html', i: 'itsrainingboxes.png' },
+        { n: 'Stack', u: 'g/stack.html', i: 'stack.png' },
+        { n: 'Rolling Forest', u: 'g/rollingforests.html', i: 'rollingforests.png' },
+        { n: 'Fluid Simulator', u: 'g/fluidsimulator.html', i: 'fluidsimulator.png' },
+        { n: 'Geometry Dash', u: 'g/geometrydash.html', i: 'geometrydash.png' },
+        { n: 'Worldle+', u: 'g/wordle.html', i: 'wordle.png' },
+        { n: 'Paper IO 2', u: 'g/paperio2.html', i: 'paperio2.png' },
+        { n: 'Raft Wars 1', u: 'g/raftwars.html', i: 'raftwars.png' },
+        { n: 'Raft Wars 2', u: 'g/raftwars2.html', i: 'raftwars2.png' }
     ];
 
     const grid = document.getElementById('grid');
+    const libraryLabel = document.getElementById('library-label');
+    const flashPopup = document.getElementById('flash-popup');
+    const TOTAL_GAMES = 77;
+
     games.forEach((game) => {
         const tile = document.createElement('div');
         tile.className = 'tile';
@@ -461,8 +637,44 @@
         tile.appendChild(imageWrapper);
         tile.appendChild(label);
 
-        tile.onclick = () => launchGame(game.u);
+        tile.dataset.name = game.n.toLowerCase();
+        tile.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            launchGame(game.u, tile);
+            return false;
+        };
+
         grid.appendChild(tile);
+    });
+
+    function updateLibraryLabel() {
+        const visibleTiles = Array.from(grid.children)
+            .filter(el => el.style.display !== 'none');
+        const count = visibleTiles.length;
+        libraryLabel.textContent = `LIBRARY: ${count}/${TOTAL_GAMES} GAMES`;
+    }
+
+    function filterGames() {
+        const q = document.getElementById('search-input').value.trim().toLowerCase();
+        Array.from(grid.children).forEach(tile => {
+            const name = tile.dataset.name || '';
+            tile.style.display = name.includes(q) ? '' : 'none';
+        });
+        updateLibraryLabel();
+    }
+
+    updateLibraryLabel();
+
+    // Flash popup when scrolling near bottom of page (not grid)
+    window.addEventListener('scroll', () => {
+        const threshold = 80;
+        const distanceFromBottom = document.body.scrollHeight - window.scrollY - window.innerHeight;
+        if (distanceFromBottom <= threshold) {
+            flashPopup.classList.add('visible');
+        } else {
+            flashPopup.classList.remove('visible');
+        }
     });
 </script>
 

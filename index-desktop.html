@@ -99,7 +99,7 @@
                 <button class="btn" onclick="setCloak('Google','https://google.com/favicon.ico')">Google</button>
                 <button class="btn" onclick="setCloak('Home - Classroom','https://ssl.gstatic.com/classroom/favicon.png')">Classroom</button>
                 <button class="btn" onclick="setCloak('My Drive','https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png')">Drive</button>
-                <button class="btn" onclick="setCloak('Rhys's Games','img/gams-g.png')">Reset</button>
+                <button class="btn" onclick="setCloak('Rhys\'s Games','img/gams-g.png')">Reset</button>
             </div>
             <button class="btn" style="width:100%" onclick="tgl('cloak-modal')">Close</button>
         </div>
@@ -125,6 +125,10 @@
                 <button class="extras-btn" onclick="openGame('nautilusosonefile.html','Nautilus OS');tgl('extras-modal')">
                     <span class="extras-btn-title">Nautilus</span>
                     <span class="extras-btn-sub">Web Operating System — full desktop experience in browser</span>
+                </button>
+                <button class="extras-btn" onclick="openGame('ng/soundboard.html','Soundboard');tgl('extras-modal')">
+                    <span class="extras-btn-title">Soundboard</span>
+                    <span class="extras-btn-sub">Audio snippets and sound effects board</span>
                 </button>
             </div>
             <button class="btn" style="width:100%" onclick="tgl('extras-modal')">Close</button>
@@ -170,13 +174,35 @@
 <script>
     const bgs = [
         {s:'bg.svg',  p:'center -475px', f:'#666666'},
-        {s:'bg2.svg', p:'center top', f:'#6E6D6B', n:0}
+        {s:'bg2.svg', p:'center -1200px', f:'#6E6D6B', n:0}
     ];
     let curBg = 0, sTar = 0, sAnim = false;
 
     const fullLib = [
         {title:"Minecraft"},
         {name:"Eaglercraft Modded", img:"eagico.png", path:"g/aminecraftfolder/wasm_gc_jspi_offline/eaglercraft_wasm_gc_jspi_offline.html", newTab:true},
+        {title:"NEW"},
+        {name:"Buckshot Roulette",          img:"ng/buckshotroulette.png", path:"ng/buckshotroulette.html"},
+        {name:"Doom",                        img:"ng/doom.png", path:"ng/doom.html"},
+        {name:"Duck Duck Clicker 3D",        img:"ng/duckduckclicker3d.webp", path:"ng/duckduckclicker3d.html"},
+        {name:"Flappy Bird",                 img:"ng/flappybird.png", path:"ng/flappybird.html"},
+        {name:"Friday Night Funkin",         img:"ng/fridaynightfunkin.png", path:"ng/fridaynightfunkin.html"},
+        {name:"Geometry Dash",               img:"ng/geometrydashlite.png", path:"ng/geometrydashlite.html"},
+        {name:"Hyppersandbox",               img:"ng/hyppersandbox.png", path:"ng/hyppersandbox.html"},
+        {name:"Jetpack Joyride",             img:"ng/jetpackjoyride.png", path:"ng/jetpackjoyride.html"},
+        {name:"Kindergarten",                img:"ng/kindergarten.png", path:"ng/kindergarten.html"},
+        {name:"Kindergarten 2",              img:"ng/kindergarten2.png", path:"ng/kindergarten2.html"},
+        {name:"Kindergarten 3",              img:"ng/kindergarten3.png", path:"ng/kindergarten3.html"},
+        {name:"Motox 3M",                img:"ng/motox3m.png", path:"ng/motox3m.html"},
+        {name:"Motox 3M 2",              img:"ng/motox3m2.png", path:"ng/motocross3m2.html"},
+        {name:"People Playground",           img:"ng/peopleplayground.png", path:"ng/peopleplayground.html"},
+        {name:"Polytrack",                   img:"ng/polytrack.png", path:"ng/polytrack.html"},
+        {name:"Repo",                        img:"ng/repo.png", path:"ng/repo.html"},
+        {name:"Run 1",                       img:"ng/run1.png", path:"ng/run1.html"},
+        {name:"Run 2",                       img:"ng/run2.png", path:"ng/run2.html"},
+        {name:"Run 3",                       img:"ng/run3.png", path:"ng/run3.html"},
+        {name:"That's Not My Neighbour",     img:"ng/thatsnotmyneighbour.png", path:"ng/thatsnotmyneighbour.html"},
+        {name:"Ultrakill",                   img:"ng/ultrakill.png", path:"ng/ultrakill.html"},
         {title:"Basic"},
         {name:"Stickman Hook",      path:"g/stickmanhook.html"},
         {name:"Drive Mad",          path:"g/g/drivemad/drivemad.html"},
